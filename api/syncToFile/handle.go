@@ -1,0 +1,25 @@
+package synctofile
+
+import (
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/programmierigel/pwmanager/storage"
+	"github.com/programmierigel/pwmanager/tools"
+)
+
+func Handle(store storage.Store) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		err := store.SyncToFile()
+
+		if err != nil {
+			tools.WarningLog("Attempt sync cached store to file.", err, r)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		status := http.StatusOK
+
+		w.WriteHeader(status)
+		w.Write([]byte(http.StatusText(status)))
+	}
+}
