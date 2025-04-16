@@ -27,7 +27,7 @@ func New(path string, password string) *Store {
 		file:                path + "/secrets.json",
 		decryptionPasswords: make(map[string]manager.Password),
 		secrets:             make(map[string]map[string]manager.Secret),
-		syncDisabled:        true,
+		syncDisabled:        false,
 		password:            password,
 	}
 	store.SyncFromFile()
