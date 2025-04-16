@@ -142,7 +142,7 @@ func (s *Store) AddNewPassword(masterPassword string, account string, passwordNa
 		return err
 	}
 
-	if tools.IsElementInMap(passwordName, s.secrets[account]) {
+	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
 		logger.Warning(fmt.Sprintf("Attemt to add a password (%s) on account %s but account already exists.", passwordName, account))
 		return fmt.Errorf("already exists")
 	}
