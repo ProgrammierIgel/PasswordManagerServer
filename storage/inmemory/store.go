@@ -187,7 +187,7 @@ func (s *Store) GetPassword(account string, masterPassword string, passwordName 
 		return "", err
 	}
 
-	if tools.IsElementInMap(passwordName, s.secrets[account]) {
+	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
 		logger.Warning(fmt.Sprintf("Attemt to get password %s from account %s but password doesn't exists on account", passwordName, account))
 		return "", fmt.Errorf("password on account not found")
 	}

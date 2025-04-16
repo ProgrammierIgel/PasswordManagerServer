@@ -42,8 +42,8 @@ func Handle(store storage.Store) httprouter.Handle {
 		}
 
 		responseBytes, err := json.Marshal(responseBody)
-		tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s) on account %s. Cant marshal password struct.", requestBody.PasswordName, requestBody.AccountName), err, request)
 		if err != nil {
+			tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s) on account %s. Cant marshal password struct.", requestBody.PasswordName, requestBody.AccountName), err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
