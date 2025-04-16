@@ -27,7 +27,7 @@ func New(path string, password string) *Store {
 		file:                path + "/secrets.json",
 		decryptionPasswords: make(map[string]manager.Password),
 		secrets:             make(map[string]map[string]manager.Secret),
-		syncDisabled:        false,
+		syncDisabled:        true,
 		password:            password,
 	}
 	store.SyncFromFile()
@@ -152,10 +152,16 @@ func (s *Store) AddNewPassword(masterPassword string, account string, passwordNa
 		return err
 	}
 
-	s.secrets[account][passwordName] = manager.Secret{
+	if s.secrets[account] == nil {
+		s.secrets[account] = make(map[string]manager.Secret)
+	}
+
+	secretsObject := manager.Secret{
 		Secret: hash,
 		URL:    url,
 	}
+
+	s.secrets[account][passwordName] = secretsObject
 	logger.Info(fmt.Sprintf("New password (%s) added on account %s", passwordName, account))
 	s.SyncToFile()
 	return nil
