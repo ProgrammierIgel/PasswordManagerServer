@@ -29,7 +29,7 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		err = store.AddPassword(requestBody.MasterPassword, requestBody.AccountName, requestBody.PasswordName, requestBody.Password)
+		err = store.AddNewPassword(requestBody.MasterPassword, requestBody.AccountName, requestBody.PasswordName, requestBody.Password, requestBody.URL)
 
 		if err != nil {
 			tools.WarningLog(fmt.Sprintf("Attempt to add new password (%s) on account %s. Cant add password.", requestBody.PasswordName, requestBody.AccountName), err, request)

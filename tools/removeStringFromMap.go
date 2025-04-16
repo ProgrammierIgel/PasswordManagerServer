@@ -1,7 +1,9 @@
 package tools
 
-func RemoveStringFromMap(mapToFind map[string]string, element string) map[string]string {
-	newMap := make(map[string]string)
+import "github.com/programmierigel/pwmanager/manager"
+
+func RemoveStringFromMap(mapToFind map[string]manager.Secret, element string) map[string]manager.Secret {
+	newMap := make(map[string]manager.Secret)
 	for key, value := range mapToFind {
 		if key == element {
 			continue

@@ -4,7 +4,7 @@ type Store interface {
 	AddNewAccount(name string, password string) error
 	DeleteAccount(name string, password string) error
 	CheckPassword(account string, password string) error
-	AddPassword(masterPassword string, account string, passwordName string, passwordToAdd string) error
+	AddNewPassword(masterPassword string, account string, passwordName string, passwordToAdd string, url string) error
 	DeletePassword(masterPassword string, account string, passwordName string) error
 	GetPassword(account string, masterPassword string, passwordName string) (string, error)
 	GetAllPasswordNamesOfAccount(account string, masterPassword string) ([]string, error)
@@ -13,4 +13,5 @@ type Store interface {
 	EnableSync(password string) (bool, error)
 	DisableSync(password string) (bool, error)
 	IsSyncDisabled() bool
+	GetURL(account string, masterPassword string, passwordName string) (string, error)
 }

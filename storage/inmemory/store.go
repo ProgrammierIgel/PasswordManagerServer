@@ -16,7 +16,7 @@ import (
 type Store struct {
 	file                string
 	decryptionPasswords map[string]manager.Password
-	secrets             map[string]map[string]string
+	secrets             map[string]map[string]manager.Secret
 	syncDisabled        bool
 	password            string
 }
@@ -26,7 +26,7 @@ func New(path string, password string) *Store {
 	store := &Store{
 		file:                path + "/secrets.json",
 		decryptionPasswords: make(map[string]manager.Password),
-		secrets:             make(map[string]map[string]string),
+		secrets:             make(map[string]map[string]manager.Secret),
 		syncDisabled:        false,
 		password:            password,
 	}
@@ -135,14 +135,14 @@ func (s *Store) CheckPassword(account string, password string) error {
 	return nil
 }
 
-func (s *Store) AddPassword(masterPassword string, account string, passwordName string, passwordToAdd string) error {
+func (s *Store) AddNewPassword(masterPassword string, account string, passwordName string, passwordToAdd string, url string) error {
 	err := s.CheckPassword(account, masterPassword)
 	if err != nil {
 		logger.Warning(fmt.Sprintf("Attemt to add a password (%s) on account %s. Failed due to incorrect password.", passwordName, account))
 		return err
 	}
 
-	if s.secrets[account][passwordName] != "" {
+	if s.secrets[account][passwordName].Secret != "" {
 		logger.Warning(fmt.Sprintf("Attemt to add a password (%s) on account %s but account already exists.", passwordName, account))
 		return fmt.Errorf("already exists")
 	}
@@ -151,7 +151,11 @@ func (s *Store) AddPassword(masterPassword string, account string, passwordName 
 		logger.Critiacal(fmt.Sprintf("Cant hash password: %s", err.Error()))
 		return err
 	}
-	s.secrets[account][passwordName] = hash
+
+	s.secrets[account][passwordName] = manager.Secret{
+		Secret: hash,
+		URL:    url,
+	}
 	logger.Info(fmt.Sprintf("New password (%s) added on account %s", passwordName, account))
 	s.SyncToFile()
 	return nil
@@ -183,12 +187,29 @@ func (s *Store) GetPassword(account string, masterPassword string, passwordName 
 	}
 	defer logger.Info(fmt.Sprintf("Password to %s on account %s successfully returned", passwordName, account))
 
-	password, err := cryptography.Decrypt(s.secrets[account][passwordName], masterPassword)
+	password, err := cryptography.Decrypt(s.secrets[account][passwordName].Secret, masterPassword)
 	if err != nil {
 		logger.Critiacal(fmt.Sprintf("Cant return password: %s", err.Error()))
 		return "", err
 	}
 	return password, nil
+}
+
+func (s *Store) GetURL(account string, masterPassword string, passwordName string) (string, error) {
+	err := s.CheckPassword(account, masterPassword)
+	if err != nil {
+		logger.Warning(fmt.Sprintf("Attemt to get url %s from account %s. Failed due to incorrect password.", passwordName, account))
+		return "", err
+	}
+
+	if tools.IsElementInMap(passwordName, s.secrets[account]) {
+		logger.Warning(fmt.Sprintf("Attemt to get url %s from account %s but url doesn't exists on account", passwordName, account))
+		return "", fmt.Errorf("url on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("Url to %s on account %s successfully returned", passwordName, account))
+
+	url := s.secrets[account][passwordName].Secret
+	return url, nil
 }
 
 func (s *Store) GetAllPasswordNamesOfAccount(account string, masterPassword string) ([]string, error) {

@@ -11,6 +11,7 @@ import (
 	enablesync "github.com/programmierigel/pwmanager/api/enableSync"
 	"github.com/programmierigel/pwmanager/api/getallpasswordsofaccount"
 	"github.com/programmierigel/pwmanager/api/getpassword"
+	"github.com/programmierigel/pwmanager/api/geturl"
 	issyncdisabled "github.com/programmierigel/pwmanager/api/isSyncDisabled"
 	"github.com/programmierigel/pwmanager/api/ping"
 	synctofile "github.com/programmierigel/pwmanager/api/syncToFile"
@@ -32,6 +33,7 @@ func GetRouter(store storage.Store) *httprouter.Router {
 	router.POST("/system/enableSync", enablesync.Handle(store))
 	router.POST("/getAllPasswordsOfAccount", getallpasswordsofaccount.Handle(store))
 	router.POST("/getPassword", getpassword.Handle(store))
+	router.POST("/getUrl", geturl.Handle(store))
 	router.GET("/system/syncFromFile", syncfromfile.Handle(store))
 	router.GET("/system/syncToFile", synctofile.Handle(store))
 	router.GET("/system/isSyncDisabled", issyncdisabled.Handle(store))
