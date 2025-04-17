@@ -32,7 +32,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		url, err := store.GetURL(requestBody.AccountName, requestBody.MasterPassword, requestBody.PasswordName)
 
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to get the url (%s) on account %s. Cant get password.", requestBody.PasswordName, requestBody.AccountName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to get the url (%s) on account %s. Cant get the url.", requestBody.PasswordName, requestBody.AccountName), err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -42,7 +42,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		}
 
 		responseBytes, err := json.Marshal(responseBody)
-		tools.WarningLog(fmt.Sprintf("Attempt to get the url (%s) on account %s. Cant marshal password struct.", requestBody.PasswordName, requestBody.AccountName), err, request)
+		tools.WarningLog(fmt.Sprintf("Attempt to get the url (%s) on account %s. Cant marshal url struct.", requestBody.PasswordName, requestBody.AccountName), err, request)
 		if err != nil {
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return

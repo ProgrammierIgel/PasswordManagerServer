@@ -208,7 +208,7 @@ func (s *Store) GetURL(account string, masterPassword string, passwordName strin
 		return "", err
 	}
 
-	if tools.IsElementInMap(passwordName, s.secrets[account]) {
+	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
 		logger.Warning(fmt.Sprintf("Attemt to get url %s from account %s but url doesn't exists on account", passwordName, account))
 		return "", fmt.Errorf("url on account not found")
 	}
