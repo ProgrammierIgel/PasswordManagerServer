@@ -214,7 +214,7 @@ func (s *Store) GetURL(account string, masterPassword string, passwordName strin
 	}
 	defer logger.Info(fmt.Sprintf("Url to %s on account %s successfully returned", passwordName, account))
 
-	url := s.secrets[account][passwordName].Secret
+	url := s.secrets[account][passwordName].URL
 	return url, nil
 }
 
