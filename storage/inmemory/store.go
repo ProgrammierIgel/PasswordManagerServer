@@ -135,7 +135,7 @@ func (s *Store) CheckPassword(account string, password string) error {
 	return nil
 }
 
-func (s *Store) AddNewPassword(masterPassword string, account string, passwordName string, passwordToAdd string, url string) error {
+func (s *Store) AddNewPassword(masterPassword string, account string, passwordName string, passwordToAdd string, url string, username string) error {
 	err := s.CheckPassword(account, masterPassword)
 	if err != nil {
 		logger.Warning(fmt.Sprintf("Attemt to add a password (%s) on account %s. Failed due to incorrect password.", passwordName, account))
@@ -157,8 +157,9 @@ func (s *Store) AddNewPassword(masterPassword string, account string, passwordNa
 	}
 
 	secretsObject := manager.Secret{
-		Secret: hash,
-		URL:    url,
+		Secret:   hash,
+		URL:      url,
+		Username: username,
 	}
 
 	s.secrets[account][passwordName] = secretsObject
@@ -215,6 +216,23 @@ func (s *Store) GetURL(account string, masterPassword string, passwordName strin
 	defer logger.Info(fmt.Sprintf("Url to %s on account %s successfully returned", passwordName, account))
 
 	url := s.secrets[account][passwordName].URL
+	return url, nil
+}
+
+func (s *Store) GetUsername(account string, masterPassword string, passwordName string) (string, error) {
+	err := s.CheckPassword(account, masterPassword)
+	if err != nil {
+		logger.Warning(fmt.Sprintf("Attemt to get username %s from account %s. Failed due to incorrect password.", passwordName, account))
+		return "", err
+	}
+
+	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
+		logger.Warning(fmt.Sprintf("Attemt to get username %s from account %s but url doesn't exists on account", passwordName, account))
+		return "", fmt.Errorf("url on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("Username to %s on account %s successfully returned", passwordName, account))
+
+	url := s.secrets[account][passwordName].Username
 	return url, nil
 }
 

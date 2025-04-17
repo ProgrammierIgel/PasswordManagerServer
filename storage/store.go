@@ -4,9 +4,10 @@ type Store interface {
 	AddNewAccount(name string, password string) error
 	DeleteAccount(name string, password string) error
 	CheckPassword(account string, password string) error
-	AddNewPassword(masterPassword string, account string, passwordName string, passwordToAdd string, url string) error
+	AddNewPassword(masterPassword string, account string, passwordName string, passwordToAdd string, url string, username string) error
 	DeletePassword(masterPassword string, account string, passwordName string) error
 	GetPassword(account string, masterPassword string, passwordName string) (string, error)
+	GetUsername(account string, masterPassword string, passwordName string) (string, error)
 	GetAllPasswordNamesOfAccount(account string, masterPassword string) ([]string, error)
 	SyncFromFile() error
 	SyncToFile() error

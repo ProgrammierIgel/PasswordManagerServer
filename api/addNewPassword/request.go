@@ -6,4 +6,5 @@ type RequestBody struct {
 	AccountName    string `json:"accountName"`
 	MasterPassword string `json:"accountPassword"`
 	URL            string `json:"url"`
+	Username       string `json:"username"`
 }
