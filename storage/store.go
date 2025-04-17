@@ -15,4 +15,8 @@ type Store interface {
 	DisableSync(password string) (bool, error)
 	IsSyncDisabled() bool
 	GetURL(account string, masterPassword string, passwordName string) (string, error)
+	ChangeUsername(account string, masterPassword string, passwordName string, newUsername string) error
+	ChangeURL(account string, masterPassword string, passwordName string, newURL string) error
+	ChangePassword(account string, masterPassword string, passwordName string, newSecret string) error
+	ChangePasswordName(account string, masterPassword string, passwordName string, newPasswordName string) error
 }

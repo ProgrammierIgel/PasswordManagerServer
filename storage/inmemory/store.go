@@ -227,7 +227,7 @@ func (s *Store) GetUsername(account string, masterPassword string, passwordName 
 	}
 
 	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to get username %s from account %s but url doesn't exists on account", passwordName, account))
+		logger.Warning(fmt.Sprintf("Attemt to get username %s from account %s but url doesn't exists on account", s.secrets[account][passwordName].Username, account))
 		return "", fmt.Errorf("url on account not found")
 	}
 	defer logger.Info(fmt.Sprintf("Username to %s on account %s successfully returned", passwordName, account))
@@ -271,4 +271,101 @@ func (s *Store) EnableSync(password string) (bool, error) {
 
 func (s *Store) IsSyncDisabled() bool {
 	return s.syncDisabled
+}
+
+func (s *Store) ChangeUsername(account string, masterPassword string, passwordName string, newUsername string) error {
+	err := s.CheckPassword(account, masterPassword)
+	if err != nil {
+		logger.Warning(fmt.Sprintf("Attemt to change username %s from account %s to %s. Failed due to incorrect password.", s.secrets[account][passwordName].Username, account, newUsername))
+		return err
+	}
+
+	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
+		logger.Warning(fmt.Sprintf("Attemt to change username %s from account %s but username doesn't exists on account", passwordName, account))
+		return fmt.Errorf("username on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("URL to %s on account %s successfully changed", passwordName, account))
+
+	currentPasswordStruct := s.secrets[account][passwordName]
+	s.secrets[account][passwordName] = manager.Secret{
+		URL:      currentPasswordStruct.URL,
+		Secret:   currentPasswordStruct.Secret,
+		Username: newUsername,
+	}
+	return nil
+}
+
+func (s *Store) ChangeURL(account string, masterPassword string, passwordName string, newURL string) error {
+	err := s.CheckPassword(account, masterPassword)
+	if err != nil {
+		logger.Warning(fmt.Sprintf("Attemt to change URL %s from account %s to %s. Failed due to incorrect password.", s.secrets[account][passwordName].URL, account, newURL))
+		return err
+	}
+
+	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
+		logger.Warning(fmt.Sprintf("Attemt to change url %s from account %s but url doesn't exists on account", passwordName, account))
+		return fmt.Errorf("username on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("URL to %s on account %s successfully changed", passwordName, account))
+
+	currentPasswordStruct := s.secrets[account][passwordName]
+	s.secrets[account][passwordName] = manager.Secret{
+		URL:      currentPasswordStruct.URL,
+		Secret:   currentPasswordStruct.Secret,
+		Username: newURL,
+	}
+	return nil
+}
+
+func (s *Store) ChangePassword(account string, masterPassword string, passwordName string, newSecret string) error {
+	err := s.CheckPassword(account, masterPassword)
+	if err != nil {
+		logger.Warning(fmt.Sprintf("Attemt to change password %s from account %s to %s. Failed due to incorrect password.", s.secrets[account][passwordName].URL, account, newSecret))
+		return err
+	}
+
+	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
+		logger.Warning(fmt.Sprintf("Attemt to change password %s from account %s but url doesn't exists on account", passwordName, account))
+		return fmt.Errorf("username on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("URL to %s on account %s successfully changed", passwordName, account))
+
+	hash, err := cryptography.Encrypt(newSecret, masterPassword)
+	if err != nil {
+		logger.Critiacal(fmt.Sprintf("Cant hash password: %s", err.Error()))
+		return err
+	}
+
+	currentPasswordStruct := s.secrets[account][passwordName]
+	s.secrets[account][passwordName] = manager.Secret{
+		URL:      currentPasswordStruct.URL,
+		Secret:   hash,
+		Username: currentPasswordStruct.Username,
+	}
+	return nil
+}
+
+func (s *Store) ChangePasswordName(account string, masterPassword string, passwordName string, newPasswordName  string) error {
+	err := s.CheckPassword(account, masterPassword)
+	if err != nil {
+		logger.Warning(fmt.Sprintf("Attemt to change passwordname %s from account %s to %s. Failed due to incorrect password.", passwordName, account, newPasswordName))
+		return err
+	}
+
+	if tools.IsElementInMap(newPasswordName, s.secrets[account]) {
+		logger.Warning(fmt.Sprintf("Attemt to change passwordname %s from account %s but id already exists", passwordName, account))
+		return fmt.Errorf("new passwordname already exists (overwrite)")
+	}
+
+	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
+		logger.Warning(fmt.Sprintf("Attemt to change passwordname %s from account %s but but passwordname doesn't exists on account", passwordName, account))
+		return fmt.Errorf("passwordname on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("Passwordname to %s on account %s successfully changed", passwordName, account))
+
+	s.secrets[account][passwordName] = s.secrets[account][newPasswordName]
+
+	s.secrets[account] = tools.RemoveStringFromMap(s.secrets[account], newPasswordName)
+
+	return nil
 }

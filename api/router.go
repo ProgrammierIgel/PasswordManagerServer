@@ -4,6 +4,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 	addnewaccount "github.com/programmierigel/pwmanager/api/addNewAccount"
 	addnewpassword "github.com/programmierigel/pwmanager/api/addNewPassword"
+	changeusername "github.com/programmierigel/pwmanager/api/changeusername"
+	"github.com/programmierigel/pwmanager/api/changepasswordname"
+	"github.com/programmierigel/pwmanager/api/changesecret"
 	"github.com/programmierigel/pwmanager/api/checkpassword"
 	deletepassword "github.com/programmierigel/pwmanager/api/deletePassword"
 	"github.com/programmierigel/pwmanager/api/deleteaccount"
@@ -34,6 +37,10 @@ func GetRouter(store storage.Store) *httprouter.Router {
 	router.POST("/getAllPasswordsOfAccount", getallpasswordsofaccount.Handle(store))
 	router.POST("/getPassword", getpassword.Handle(store))
 	router.POST("/getUrl", geturl.Handle(store))
+	router.POST("/changePasswordName", changepasswordname.Handle(store))
+	router.POST("/changeUrl", changepasswordname.Handle(store))
+	router.POST("/changeSecret", changesecret.Handle(store))
+	router.POST("/changeUsername", changeusername.Handle(store))
 	router.GET("/system/syncFromFile", syncfromfile.Handle(store))
 	router.GET("/system/syncToFile", synctofile.Handle(store))
 	router.GET("/system/isSyncDisabled", issyncdisabled.Handle(store))
