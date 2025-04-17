@@ -2,7 +2,7 @@ package changesecret
 
 type RequestBody struct {
 	PasswordName   string `json:"passwordName"`
-	NewURL         string `json:"newUrl"`
+	NewSecret        string `json:"newSecret"`
 	AccountName    string `json:"accountName"`
 	MasterPassword string `json:"accountPassword"`
 }

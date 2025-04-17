@@ -29,7 +29,7 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		err = store.ChangeURL(requestBody.AccountName, requestBody.MasterPassword, requestBody.PasswordName, requestBody.NewURL)
+		err = store.ChangePassword(requestBody.AccountName, requestBody.MasterPassword, requestBody.PasswordName, requestBody.NewSecret)
 
 		if err != nil {
 			tools.WarningLog(fmt.Sprintf("Attempt to change secret (%s) on account %s. Cant change secret.", requestBody.PasswordName, requestBody.AccountName), err, request)
