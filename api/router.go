@@ -4,9 +4,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 	addnewaccount "github.com/programmierigel/pwmanager/api/addNewAccount"
 	addnewpassword "github.com/programmierigel/pwmanager/api/addNewPassword"
-	changeusername "github.com/programmierigel/pwmanager/api/changeusername"
 	"github.com/programmierigel/pwmanager/api/changepasswordname"
 	"github.com/programmierigel/pwmanager/api/changesecret"
+	changeusername "github.com/programmierigel/pwmanager/api/changeusername"
 	"github.com/programmierigel/pwmanager/api/checkpassword"
 	deletepassword "github.com/programmierigel/pwmanager/api/deletePassword"
 	"github.com/programmierigel/pwmanager/api/deleteaccount"
@@ -15,6 +15,7 @@ import (
 	"github.com/programmierigel/pwmanager/api/getallpasswordsofaccount"
 	"github.com/programmierigel/pwmanager/api/getpassword"
 	"github.com/programmierigel/pwmanager/api/geturl"
+	"github.com/programmierigel/pwmanager/api/getusername"
 	issyncdisabled "github.com/programmierigel/pwmanager/api/isSyncDisabled"
 	"github.com/programmierigel/pwmanager/api/ping"
 	synctofile "github.com/programmierigel/pwmanager/api/syncToFile"
@@ -36,6 +37,7 @@ func GetRouter(store storage.Store) *httprouter.Router {
 	router.POST("/system/enableSync", enablesync.Handle(store))
 	router.POST("/getAllPasswordsOfAccount", getallpasswordsofaccount.Handle(store))
 	router.POST("/getPassword", getpassword.Handle(store))
+	router.POST("/getUsername", getusername.Handle(store))
 	router.POST("/getUrl", geturl.Handle(store))
 	router.POST("/changePasswordName", changepasswordname.Handle(store))
 	router.POST("/changeUrl", changepasswordname.Handle(store))
@@ -44,6 +46,5 @@ func GetRouter(store storage.Store) *httprouter.Router {
 	router.GET("/system/syncFromFile", syncfromfile.Handle(store))
 	router.GET("/system/syncToFile", synctofile.Handle(store))
 	router.GET("/system/isSyncDisabled", issyncdisabled.Handle(store))
-
 	return router
 }
