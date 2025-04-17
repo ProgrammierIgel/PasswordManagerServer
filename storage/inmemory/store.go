@@ -232,8 +232,8 @@ func (s *Store) GetUsername(account string, masterPassword string, passwordName 
 	}
 	defer logger.Info(fmt.Sprintf("Username to %s on account %s successfully returned", passwordName, account))
 
-	url := s.secrets[account][passwordName].Username
-	return url, nil
+	username := s.secrets[account][passwordName].Username
+	return username, nil
 }
 
 func (s *Store) GetAllPasswordNamesOfAccount(account string, masterPassword string) ([]string, error) {
@@ -345,7 +345,7 @@ func (s *Store) ChangePassword(account string, masterPassword string, passwordNa
 	return nil
 }
 
-func (s *Store) ChangePasswordName(account string, masterPassword string, passwordName string, newPasswordName  string) error {
+func (s *Store) ChangePasswordName(account string, masterPassword string, passwordName string, newPasswordName string) error {
 	err := s.CheckPassword(account, masterPassword)
 	if err != nil {
 		logger.Warning(fmt.Sprintf("Attemt to change passwordname %s from account %s to %s. Failed due to incorrect password.", passwordName, account, newPasswordName))

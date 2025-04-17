@@ -1,7 +1,7 @@
 package manager
 
 type Secret struct {
-	Secret string
-	URL    string
-	Username string
+	Secret   string `json:"secret"`
+	URL      string `json:"url"`
+	Username string `json:"username"`
 }
