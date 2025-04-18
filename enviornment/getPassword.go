@@ -10,9 +10,9 @@ func Password(defaultPassword string) string {
 	password := os.Getenv("PASSWORD")
 
 	if password == "" {
-		logger.Info("Using default password")
+		logger.Info("[Enviornment Vars] Using default password")
 		return defaultPassword
 	}
-	logger.Critiacal("Using env password")
+	logger.Critiacal("[Enviornment Vars] Using env password")
 	return password
 }

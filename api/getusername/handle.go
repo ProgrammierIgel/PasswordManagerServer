@@ -29,10 +29,10 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		username, err := store.GetUsername(requestBody.AccountName, requestBody.MasterPassword, requestBody.PasswordName)
+		username, err := store.GetUsername(requestBody.Token, requestBody.PasswordName)
 
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to get the username (%s) on account %s. Cant get the username.", requestBody.PasswordName, requestBody.AccountName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to get the username (%s). Cant get the username.", requestBody.PasswordName), err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -43,14 +43,14 @@ func Handle(store storage.Store) httprouter.Handle {
 
 		responseBytes, err := json.Marshal(responseBody)
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to get the username (%s) on account %s. Cant marshal username struct.", requestBody.PasswordName, requestBody.AccountName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to get the username (%s). Cant marshal username struct.", requestBody.PasswordName), err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
-		tools.DebugLog(fmt.Sprintf("Getted username (%s) from account %s", requestBody.PasswordName, requestBody.AccountName), request)
+		tools.DebugLog(fmt.Sprintf("Getted username (%s)", requestBody.PasswordName), request)
 		response.Write(responseBytes)
 	}
 }

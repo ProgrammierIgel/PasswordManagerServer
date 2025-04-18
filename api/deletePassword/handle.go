@@ -29,17 +29,17 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		err = store.DeletePassword(requestBody.MasterPassword, requestBody.AccountName, requestBody.PasswordName)
+		err = store.DeletePassword(requestBody.Token, requestBody.PasswordName)
 
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to delete password (%s) on account %s. Cant add password.", requestBody.PasswordName, requestBody.AccountName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to delete password (%s). Cant add password.", requestBody.PasswordName), err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
-		tools.DebugLog(fmt.Sprintf("Deleted password (%s) on account %s", requestBody.PasswordName, requestBody.AccountName), request)
+		tools.DebugLog(fmt.Sprintf("Deleted password (%s)", requestBody.PasswordName), request)
 		response.Write([]byte(http.StatusText(http.StatusOK)))
 	}
 }

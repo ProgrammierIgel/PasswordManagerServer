@@ -8,8 +8,13 @@ import (
 	"github.com/programmierigel/pwmanager/api/changesecret"
 	changeusername "github.com/programmierigel/pwmanager/api/changeusername"
 	"github.com/programmierigel/pwmanager/api/checkpassword"
+	"github.com/programmierigel/pwmanager/api/checktoken"
+	"github.com/programmierigel/pwmanager/api/createtoken"
 	deletepassword "github.com/programmierigel/pwmanager/api/deletePassword"
 	"github.com/programmierigel/pwmanager/api/deleteaccount"
+	"github.com/programmierigel/pwmanager/api/devaluealltoken"
+	"github.com/programmierigel/pwmanager/api/devaluealltokenofaccount"
+	"github.com/programmierigel/pwmanager/api/devaluetoken"
 	disablesync "github.com/programmierigel/pwmanager/api/disableSync"
 	enablesync "github.com/programmierigel/pwmanager/api/enableSync"
 	"github.com/programmierigel/pwmanager/api/getallpasswordsofaccount"
@@ -46,5 +51,10 @@ func GetRouter(store storage.Store) *httprouter.Router {
 	router.GET("/system/syncFromFile", syncfromfile.Handle(store))
 	router.GET("/system/syncToFile", synctofile.Handle(store))
 	router.GET("/system/isSyncDisabled", issyncdisabled.Handle(store))
+	router.POST("/system/devalueAllToken", devaluealltoken.Handle(store))
+	router.POST("/devalueAllTokenOfAccount", devaluealltokenofaccount.Handle(store))
+	router.POST("/createToken", createtoken.Handle(store))
+	router.POST("/devalueToken", devaluetoken.Handle(store))
+	router.POST("/checkToken", checktoken.Handle(store))
 	return router
 }

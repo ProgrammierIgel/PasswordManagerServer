@@ -6,7 +6,9 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/programmierigel/pwmanager/cryptography"
 	"github.com/programmierigel/pwmanager/logger"
 	"github.com/programmierigel/pwmanager/manager"
@@ -19,32 +21,34 @@ type Store struct {
 	secrets             map[string]map[string]manager.Secret
 	syncDisabled        bool
 	password            string
+	token               map[string]manager.Token
 }
 
 func New(path string, password string) *Store {
 
 	store := &Store{
-		file:                path + "/secrets.json",
+		file:                fmt.Sprintf("%s/secrets.json", path),
 		decryptionPasswords: make(map[string]manager.Password),
 		secrets:             make(map[string]map[string]manager.Secret),
 		syncDisabled:        false,
 		password:            password,
+		token:               make(map[string]manager.Token),
 	}
 	store.SyncFromFile()
-	logger.Info("New Store was created")
+	logger.Info("[STORE] New Store was created")
 	return store
 }
 
 func (s *Store) SyncFromFile() error {
 	if s.syncDisabled {
-		logger.Critiacal("syncronization is disabled")
+		logger.Critiacal("[STORE] syncronization is disabled")
 		return nil
 	}
 
 	jsonFile, err := os.Open(s.file)
 
 	if err != nil {
-		logger.Critiacal("Secrets file was not found")
+		logger.Critiacal("[STORE] Secrets file was not found")
 		return err
 	}
 
@@ -56,18 +60,18 @@ func (s *Store) SyncFromFile() error {
 
 	err = json.Unmarshal(byteValue, &secretsFile)
 	if err != nil {
-		logger.Critiacal("Content of secrets file is not compatible to JSON")
+		logger.Critiacal("[STORE] Content of secrets file is not compatible to JSON")
 		return err
 	}
 	s.decryptionPasswords = secretsFile.MainPasswords
 	s.secrets = secretsFile.Secrets
-	logger.Info("System load save from file")
+	logger.Info("[STORE] System load save from file")
 	return nil
 }
 
 func (s *Store) SyncToFile() error {
 	if s.syncDisabled {
-		logger.Critiacal("syncronization is disabled")
+		logger.Critiacal("[STORE] syncronization is disabled")
 		return nil
 	}
 
@@ -78,16 +82,16 @@ func (s *Store) SyncToFile() error {
 
 	parsedFile, err := json.Marshal(file)
 	if err != nil {
-		logger.Critiacal("Content of secrets file is not compatible to JSON")
+		logger.Critiacal("[STORE] Content of secrets file is not compatible to JSON")
 		return err
 	}
 
 	err = os.WriteFile(s.file, parsedFile, fs.FileMode(0222))
 	if err != nil {
-		logger.Critiacal("Content cant saved to secrets file")
+		logger.Critiacal("[STORE] Content cant saved to secrets file")
 		return err
 	}
-	logger.Info("System saved to file")
+	logger.Info("[STORE] System saved to file")
 	return nil
 
 }
@@ -99,7 +103,7 @@ func (s *Store) AddNewAccount(account string, password string) error {
 	}
 	s.SyncFromFile()
 	if s.decryptionPasswords[account].PasswordHash != "" {
-		logger.Warning(fmt.Sprintf("Attempt to create a account that already exists (account name: %s)", account))
+		logger.Warning(fmt.Sprintf("[STORE] Attempt to create a account that already exists (account name: %s)", account))
 		return fmt.Errorf("account already exists")
 	}
 	updatePasswordStruct := manager.Password{
@@ -108,22 +112,307 @@ func (s *Store) AddNewAccount(account string, password string) error {
 	}
 
 	s.decryptionPasswords[account] = updatePasswordStruct
-	logger.Info(fmt.Sprintf("New Account was created with name %s", account))
+	logger.Info(fmt.Sprintf("[STORE] New Account was created with name %s", account))
 	s.SyncToFile()
 	return nil
 }
 
-func (s *Store) DeleteAccount(account string, password string) error {
-	err := s.CheckPassword(account, password)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to delete account %s account. Failed due to incorrect password.", account))
-		return err
+func (s *Store) DeleteAccount(account string, token string) error {
+	if s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to delete account %s account. Failed due to incorrect token.", account))
+		return fmt.Errorf("incorrect token")
+	}
+	if s.token[token].AccountName != account {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to delete account %s account. Failed due trying to delete other account", account))
+		return fmt.Errorf("cant delete other account")
 	}
 	s.decryptionPasswords = tools.RemovePasswordFromMap(s.decryptionPasswords, account)
 	s.secrets = tools.RemoveMapFromMap(s.secrets, account)
-	logger.Warning(fmt.Sprintf("Account %s was deleted", account))
+	logger.Warning(fmt.Sprintf("[STORE] Account %s was deleted", account))
 	s.SyncToFile()
 	return nil
+}
+
+func (s *Store) AddNewPassword(token string, passwordName string, passwordToAdd string, url string, username string) error {
+	if !s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to add a password (%s). Failed due to incorrect password.", passwordName))
+		return fmt.Errorf("incorrect token")
+	}
+	tokenValue := s.token[token]
+
+	if tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to add a password (%s) on account %s but account already exists.", passwordName, tokenValue.AccountName))
+		return fmt.Errorf("already exists")
+	}
+	hash, err := cryptography.Encrypt(passwordToAdd, tokenValue.MasterPassword)
+	if err != nil {
+		logger.Critiacal(fmt.Sprintf("[STORE] Cant hash password: %s", err.Error()))
+		return err
+	}
+
+	if s.secrets[tokenValue.AccountName] == nil {
+		s.secrets[tokenValue.AccountName] = make(map[string]manager.Secret)
+	}
+
+	secretsObject := manager.Secret{
+		Secret:   hash,
+		URL:      url,
+		Username: username,
+	}
+
+	s.secrets[tokenValue.AccountName][passwordName] = secretsObject
+	logger.Info(fmt.Sprintf("[STORE] New password (%s) added on account %s", passwordName, tokenValue.AccountName))
+	s.SyncToFile()
+	return nil
+}
+
+func (s *Store) DeletePassword(token string, passwordName string) error {
+	if !s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to delete password (%s) on account. Failed due to incorrect token.", passwordName))
+		return fmt.Errorf("incorrect token")
+	}
+	tokenValue := s.token[token]
+
+	s.secrets[tokenValue.AccountName] = tools.RemoveStringFromMap(s.secrets[tokenValue.AccountName], passwordName)
+	logger.Warning(fmt.Sprintf("[STORE] Deleted %s password on account %s", passwordName, tokenValue.AccountName))
+	s.SyncToFile()
+	return nil
+}
+
+func (s *Store) GetPassword(token string, passwordName string) (string, error) {
+	if !s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to get password %s from account. Failed due to incorrect token to decryption.", passwordName))
+		return "", fmt.Errorf("incorrect token")
+	}
+	tokenValue := s.token[token]
+	if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to get password %s from account %s but password doesn't exists on account", passwordName, tokenValue.AccountName))
+		return "", fmt.Errorf("password on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("[STORE] Password to %s on account %s successfully returned", passwordName, tokenValue.AccountName))
+
+	password, err := cryptography.Decrypt(s.secrets[tokenValue.AccountName][passwordName].Secret, tokenValue.MasterPassword)
+	if err != nil {
+		logger.Critiacal(fmt.Sprintf("[STORE] Cant return password: %s", err.Error()))
+		return "", err
+	}
+	return password, nil
+}
+
+func (s *Store) GetURL(token string, passwordName string) (string, error) {
+	if !s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to get url %s from account. Failed due to incorrect token.", passwordName))
+		return "", fmt.Errorf("incorrect token")
+	}
+	tokenValue := s.token[token]
+
+	if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to get url %s from account %s but url doesn't exists on account", passwordName, tokenValue.AccountName))
+		return "", fmt.Errorf("url on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("[STORE] Url to %s on account %s successfully returned", passwordName, tokenValue.AccountName))
+
+	url := s.secrets[tokenValue.AccountName][passwordName].URL
+	return url, nil
+}
+
+func (s *Store) GetUsername(token string, passwordName string) (string, error) {
+	if !s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to get username %s from account. Failed due to incorrect token.", passwordName))
+		return "", fmt.Errorf("incorrect token")
+	}
+	tokenValue := s.token[token]
+
+	if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to get username %s from account %s but url doesn't exists on account", s.secrets[tokenValue.AccountName][passwordName].Username, tokenValue.AccountName))
+		return "", fmt.Errorf("url on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("[STORE] Username to %s on account %s successfully returned", passwordName, tokenValue.AccountName))
+
+	username := s.secrets[tokenValue.AccountName][passwordName].Username
+	return username, nil
+}
+
+func (s *Store) GetAllPasswordNamesOfAccount(token string) ([]string, error) {
+	if s.CheckToken(token) {
+		logger.Warning("[STORE] Attemt to get all registered passwords from account. Failed due to incorrect token to decryption.")
+		return make([]string, 0), fmt.Errorf("incorrect token")
+	}
+
+	tokenValue := s.token[token]
+	allPasswordNames := make([]string, 0)
+	for name := range s.secrets[tokenValue.AccountName] {
+		allPasswordNames = append(allPasswordNames, name)
+	}
+	logger.Debug(fmt.Sprintf("[STORE] All PasswordNames of Account %s returned", tokenValue.AccountName))
+	return allPasswordNames, nil
+
+}
+
+func (s *Store) DisableSync(password string) (bool, error) {
+	if s.password != password {
+		return s.syncDisabled, fmt.Errorf("wrong password")
+	}
+	s.syncDisabled = true
+	logger.Critiacal("[STORE] !SYNC IS DISABLED!")
+	return s.syncDisabled, nil
+}
+
+func (s *Store) EnableSync(password string) (bool, error) {
+	if s.password != password {
+		return s.syncDisabled, fmt.Errorf("wrong password")
+	}
+	s.syncDisabled = false
+	logger.Info("[STORE] SYNC IS ENABLED")
+	return s.syncDisabled, nil
+}
+
+func (s *Store) IsSyncDisabled() bool {
+	return s.syncDisabled
+}
+
+func (s *Store) ChangeUsername(token string, passwordName string, newUsername string) error {
+	if !s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to change username to %s. Failed due to incorrect token.", newUsername))
+		return fmt.Errorf("incorrect token")
+	}
+	tokenValue := s.token[token]
+
+	if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to change username %s from account %s but username doesn't exists on account", passwordName, tokenValue.AccountName))
+		return fmt.Errorf("username on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("[STORE] URL to %s on account %s successfully changed", passwordName, tokenValue.AccountName))
+
+	currentPasswordStruct := s.secrets[tokenValue.AccountName][passwordName]
+	s.secrets[tokenValue.AccountName][passwordName] = manager.Secret{
+		URL:      currentPasswordStruct.URL,
+		Secret:   currentPasswordStruct.Secret,
+		Username: newUsername,
+	}
+	return nil
+}
+
+func (s *Store) ChangeURL(token string, passwordName string, newURL string) error {
+	if s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to change URL to %s. Failed due to incorrect password.", newURL))
+		return fmt.Errorf("incorrect token")
+	}
+
+	tokenValue := s.token[token]
+	if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to change url %s from account %s but url doesn't exists on account", passwordName, tokenValue.AccountName))
+		return fmt.Errorf("username on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("[STORE] URL to %s on account %s successfully changed", passwordName, tokenValue.AccountName))
+
+	currentPasswordStruct := s.secrets[tokenValue.AccountName][passwordName]
+	s.secrets[tokenValue.AccountName][passwordName] = manager.Secret{
+		URL:      currentPasswordStruct.URL,
+		Secret:   currentPasswordStruct.Secret,
+		Username: newURL,
+	}
+	return nil
+}
+
+func (s *Store) ChangePassword(token string, passwordName string, newSecret string) error {
+	if !s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to change password to %s. Failed due to incorrect token.", newSecret))
+		return fmt.Errorf("incorrect token")
+	}
+	tokenValue := s.token[token]
+
+	if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to change password %s from account %s but url doesn't exists on account", passwordName, tokenValue.AccountName))
+		return fmt.Errorf("username on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("[STORE] URL to %s on account %s successfully changed", passwordName, tokenValue.AccountName))
+
+	hash, err := cryptography.Encrypt(newSecret, tokenValue.MasterPassword)
+	if err != nil {
+		logger.Critiacal(fmt.Sprintf("[STORE] Cant hash password: %s", err.Error()))
+		return err
+	}
+
+	currentPasswordStruct := s.secrets[tokenValue.AccountName][passwordName]
+	s.secrets[tokenValue.AccountName][passwordName] = manager.Secret{
+		URL:      currentPasswordStruct.URL,
+		Secret:   hash,
+		Username: currentPasswordStruct.Username,
+	}
+	return nil
+}
+
+func (s *Store) ChangePasswordName(token string, passwordName string, newPasswordName string) error {
+	if !s.CheckToken(token) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to change passwordname %s to %s. Failed due to incorrect token.", passwordName, newPasswordName))
+		return fmt.Errorf("incorrect token")
+	}
+	tokenValue := s.token[token]
+
+	if tools.IsElementInMap(newPasswordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to change passwordname %s from account %s but id already exists", passwordName, tokenValue.AccountName))
+		return fmt.Errorf("new passwordname already exists (overwrite)")
+	}
+
+	if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to change passwordname %s from account %s but but passwordname doesn't exists on account", passwordName, tokenValue.AccountName))
+		return fmt.Errorf("passwordname on account not found")
+	}
+	defer logger.Info(fmt.Sprintf("[STORE] Passwordname to %s on account %s successfully changed", passwordName, tokenValue.AccountName))
+
+	s.secrets[tokenValue.AccountName][passwordName] = s.secrets[tokenValue.AccountName][newPasswordName]
+
+	s.secrets[tokenValue.AccountName] = tools.RemoveStringFromMap(s.secrets[tokenValue.AccountName], newPasswordName)
+
+	return nil
+}
+
+func (s *Store) CreateToken(accountName string, masterpassword string) (string, error) {
+	currentTime := time.Now()
+
+	err := s.CheckPassword(accountName, masterpassword)
+	if err != nil {
+		logger.Warning(fmt.Sprintf("[STORE] Attemt to create token on account %s. Failed due to incorrect password.", accountName))
+		return "", err
+	}
+	newID := uuid.New().String()
+	if tools.IsIDInMap(newID, s.token) {
+		return "", fmt.Errorf("internal error: cant create new Tokens")
+	}
+
+	s.token[newID] = manager.Token{
+		Timestamp:      currentTime,
+		AccountName:    accountName,
+		MasterPassword: masterpassword,
+	}
+	logger.Debug(fmt.Sprintf("[STORE] Successfully token on account %s created.", accountName))
+	return newID, nil
+
+}
+
+func (s *Store) CheckToken(token string) bool {
+	currentTime := time.Now()
+	if !tools.IsIDInMap(token, s.token) {
+		logger.Debug("[STORE] token to check not registered")
+		return false
+	}
+	oneHourInMillisec := int64(3600000)
+	if currentTime.UnixMilli()-s.token[token].Timestamp.UnixMilli() > oneHourInMillisec {
+		logger.Debug("[STORE] time of token to check is over")
+		s.token = tools.RemoveTokenFromMap(token, s.token)
+		return false
+	}
+	return true
+}
+
+func (s *Store) DevalueToken(token string) {
+	if !s.CheckToken(token) {
+		return
+	}
+
+	defer logger.Debug((fmt.Sprintf("[STORE] Successfully token from account %s devalued", s.token[token].AccountName)))
+	s.token = tools.RemoveTokenFromMap(token, s.token)
 }
 
 func (s *Store) CheckPassword(account string, password string) error {
@@ -135,237 +424,33 @@ func (s *Store) CheckPassword(account string, password string) error {
 	return nil
 }
 
-func (s *Store) AddNewPassword(masterPassword string, account string, passwordName string, passwordToAdd string, url string, username string) error {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to add a password (%s) on account %s. Failed due to incorrect password.", passwordName, account))
-		return err
+func (s *Store) DevalueAllTokens(password string) error {
+	if password != s.password {
+		logger.Warning("[STORE] Attempt to devalue all tokens. Failed due incorrect password")
+		return fmt.Errorf("incorrect password")
 	}
-
-	if tools.IsElementInMap(passwordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to add a password (%s) on account %s but account already exists.", passwordName, account))
-		return fmt.Errorf("already exists")
-	}
-	hash, err := cryptography.Encrypt(passwordToAdd, masterPassword)
-	if err != nil {
-		logger.Critiacal(fmt.Sprintf("Cant hash password: %s", err.Error()))
-		return err
-	}
-
-	if s.secrets[account] == nil {
-		s.secrets[account] = make(map[string]manager.Secret)
-	}
-
-	secretsObject := manager.Secret{
-		Secret:   hash,
-		URL:      url,
-		Username: username,
-	}
-
-	s.secrets[account][passwordName] = secretsObject
-	logger.Info(fmt.Sprintf("New password (%s) added on account %s", passwordName, account))
-	s.SyncToFile()
+	// Path and Password are not needed to create new token object
+	newStore := New("", "")
+	s.token = newStore.token
+	logger.Warning("[STORE] All tokens succesfully devalued!")
 	return nil
 }
 
-func (s *Store) DeletePassword(masterPassword string, account string, passwordName string) error {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to delete password (%s) on account %s . Failed due to incorrect password.", passwordName, account))
-		return err
+func (s *Store) DevalueAllTokensOfAccount(token string) error {
+	if !s.CheckToken(token) {
+		logger.Warning("[STORE] Attempt to devalue all tokens of account. Token incorrect")
+		return fmt.Errorf("token incorrect")
 	}
 
-	s.secrets[account] = tools.RemoveStringFromMap(s.secrets[account], passwordName)
-	logger.Warning(fmt.Sprintf("Deleted %s password on account %s", passwordName, account))
-	s.SyncToFile()
-	return nil
-}
-
-func (s *Store) GetPassword(account string, masterPassword string, passwordName string) (string, error) {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to get password %s from account %s. Failed due to incorrect password to decryption.", passwordName, account))
-		return "", err
+	accountName := s.token[token].AccountName
+	remainingTokens := make(map[string]manager.Token)
+	for tokenIterator, tokenValue := range s.token {
+		if tokenValue.AccountName == accountName {
+			continue
+		}
+		remainingTokens[tokenIterator] = tokenValue
 	}
-
-	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to get password %s from account %s but password doesn't exists on account", passwordName, account))
-		return "", fmt.Errorf("password on account not found")
-	}
-	defer logger.Info(fmt.Sprintf("Password to %s on account %s successfully returned", passwordName, account))
-
-	password, err := cryptography.Decrypt(s.secrets[account][passwordName].Secret, masterPassword)
-	if err != nil {
-		logger.Critiacal(fmt.Sprintf("Cant return password: %s", err.Error()))
-		return "", err
-	}
-	return password, nil
-}
-
-func (s *Store) GetURL(account string, masterPassword string, passwordName string) (string, error) {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to get url %s from account %s. Failed due to incorrect password.", passwordName, account))
-		return "", err
-	}
-
-	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to get url %s from account %s but url doesn't exists on account", passwordName, account))
-		return "", fmt.Errorf("url on account not found")
-	}
-	defer logger.Info(fmt.Sprintf("Url to %s on account %s successfully returned", passwordName, account))
-
-	url := s.secrets[account][passwordName].URL
-	return url, nil
-}
-
-func (s *Store) GetUsername(account string, masterPassword string, passwordName string) (string, error) {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to get username %s from account %s. Failed due to incorrect password.", passwordName, account))
-		return "", err
-	}
-
-	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to get username %s from account %s but url doesn't exists on account", s.secrets[account][passwordName].Username, account))
-		return "", fmt.Errorf("url on account not found")
-	}
-	defer logger.Info(fmt.Sprintf("Username to %s on account %s successfully returned", passwordName, account))
-
-	username := s.secrets[account][passwordName].Username
-	return username, nil
-}
-
-func (s *Store) GetAllPasswordNamesOfAccount(account string, masterPassword string) ([]string, error) {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to get all registered passwords from account %s. Failed due to incorrect password to decryption.", account))
-		return make([]string, 0), err
-	}
-	allPasswordNames := make([]string, 0)
-	for name := range s.secrets[account] {
-		allPasswordNames = append(allPasswordNames, name)
-	}
-	logger.Debug(fmt.Sprintf("All PasswordNames of Account %s returned", account))
-	return allPasswordNames, nil
-
-}
-
-func (s *Store) DisableSync(password string) (bool, error) {
-	if s.password != password {
-		return s.syncDisabled, fmt.Errorf("wrong password")
-	}
-	s.syncDisabled = true
-	logger.Critiacal("!SYNC IS DISABLED!")
-	return s.syncDisabled, nil
-}
-
-func (s *Store) EnableSync(password string) (bool, error) {
-	if s.password != password {
-		return s.syncDisabled, fmt.Errorf("wrong password")
-	}
-	s.syncDisabled = false
-	logger.Info("SYNC IS ENABLED")
-	return s.syncDisabled, nil
-}
-
-func (s *Store) IsSyncDisabled() bool {
-	return s.syncDisabled
-}
-
-func (s *Store) ChangeUsername(account string, masterPassword string, passwordName string, newUsername string) error {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to change username %s from account %s to %s. Failed due to incorrect password.", s.secrets[account][passwordName].Username, account, newUsername))
-		return err
-	}
-
-	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to change username %s from account %s but username doesn't exists on account", passwordName, account))
-		return fmt.Errorf("username on account not found")
-	}
-	defer logger.Info(fmt.Sprintf("URL to %s on account %s successfully changed", passwordName, account))
-
-	currentPasswordStruct := s.secrets[account][passwordName]
-	s.secrets[account][passwordName] = manager.Secret{
-		URL:      currentPasswordStruct.URL,
-		Secret:   currentPasswordStruct.Secret,
-		Username: newUsername,
-	}
-	return nil
-}
-
-func (s *Store) ChangeURL(account string, masterPassword string, passwordName string, newURL string) error {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to change URL %s from account %s to %s. Failed due to incorrect password.", s.secrets[account][passwordName].URL, account, newURL))
-		return err
-	}
-
-	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to change url %s from account %s but url doesn't exists on account", passwordName, account))
-		return fmt.Errorf("username on account not found")
-	}
-	defer logger.Info(fmt.Sprintf("URL to %s on account %s successfully changed", passwordName, account))
-
-	currentPasswordStruct := s.secrets[account][passwordName]
-	s.secrets[account][passwordName] = manager.Secret{
-		URL:      currentPasswordStruct.URL,
-		Secret:   currentPasswordStruct.Secret,
-		Username: newURL,
-	}
-	return nil
-}
-
-func (s *Store) ChangePassword(account string, masterPassword string, passwordName string, newSecret string) error {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to change password %s from account %s to %s. Failed due to incorrect password.", s.secrets[account][passwordName].URL, account, newSecret))
-		return err
-	}
-
-	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to change password %s from account %s but url doesn't exists on account", passwordName, account))
-		return fmt.Errorf("username on account not found")
-	}
-	defer logger.Info(fmt.Sprintf("URL to %s on account %s successfully changed", passwordName, account))
-
-	hash, err := cryptography.Encrypt(newSecret, masterPassword)
-	if err != nil {
-		logger.Critiacal(fmt.Sprintf("Cant hash password: %s", err.Error()))
-		return err
-	}
-
-	currentPasswordStruct := s.secrets[account][passwordName]
-	s.secrets[account][passwordName] = manager.Secret{
-		URL:      currentPasswordStruct.URL,
-		Secret:   hash,
-		Username: currentPasswordStruct.Username,
-	}
-	return nil
-}
-
-func (s *Store) ChangePasswordName(account string, masterPassword string, passwordName string, newPasswordName string) error {
-	err := s.CheckPassword(account, masterPassword)
-	if err != nil {
-		logger.Warning(fmt.Sprintf("Attemt to change passwordname %s from account %s to %s. Failed due to incorrect password.", passwordName, account, newPasswordName))
-		return err
-	}
-
-	if tools.IsElementInMap(newPasswordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to change passwordname %s from account %s but id already exists", passwordName, account))
-		return fmt.Errorf("new passwordname already exists (overwrite)")
-	}
-
-	if !tools.IsElementInMap(passwordName, s.secrets[account]) {
-		logger.Warning(fmt.Sprintf("Attemt to change passwordname %s from account %s but but passwordname doesn't exists on account", passwordName, account))
-		return fmt.Errorf("passwordname on account not found")
-	}
-	defer logger.Info(fmt.Sprintf("Passwordname to %s on account %s successfully changed", passwordName, account))
-
-	s.secrets[account][passwordName] = s.secrets[account][newPasswordName]
-
-	s.secrets[account] = tools.RemoveStringFromMap(s.secrets[account], newPasswordName)
-
+	s.token = remainingTokens
+	logger.Debug(fmt.Sprintf("[STORE] Successfully all tokens of account %s devalued", accountName))
 	return nil
 }

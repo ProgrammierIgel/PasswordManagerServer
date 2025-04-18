@@ -2,7 +2,6 @@ package getallpasswordsofaccount
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -29,10 +28,10 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		passwordNames, err := store.GetAllPasswordNamesOfAccount(requestBody.AccountName, requestBody.MasterPassword)
+		passwordNames, err := store.GetAllPasswordNamesOfAccount(requestBody.Token)
 
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to get all passwordnames of account %s. Cant get passwords.", requestBody.AccountName), err, request)
+			tools.WarningLog("Attempt to get all passwordnames. Cant get passwords.", err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -43,14 +42,14 @@ func Handle(store storage.Store) httprouter.Handle {
 
 		responseBytes, err := json.Marshal(responseBody)
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to get all passwordnames of account %s. Cant marshal password struct.", requestBody.AccountName), err, request)
+			tools.WarningLog("Attempt to get all passwordnames of account. Cant marshal password struct.", err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
-		tools.DebugLog(fmt.Sprintf("Getted all passwordnames of account %s.",requestBody.AccountName), request)
+		tools.DebugLog("Getted all passwordnames of account.", request)
 		response.Write(responseBytes)
 	}
 }

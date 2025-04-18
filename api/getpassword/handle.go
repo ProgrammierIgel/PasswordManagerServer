@@ -29,10 +29,10 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		password, err := store.GetPassword(requestBody.AccountName, requestBody.MasterPassword, requestBody.PasswordName)
+		password, err := store.GetPassword(requestBody.Token, requestBody.PasswordName)
 
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s) on account %s. Cant get password.", requestBody.PasswordName, requestBody.AccountName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant get password.", requestBody.PasswordName), err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -43,14 +43,14 @@ func Handle(store storage.Store) httprouter.Handle {
 
 		responseBytes, err := json.Marshal(responseBody)
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s) on account %s. Cant marshal password struct.", requestBody.PasswordName, requestBody.AccountName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant marshal password struct.", requestBody.PasswordName), err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
-		tools.DebugLog(fmt.Sprintf("Getted password (%s) from account %s", requestBody.PasswordName, requestBody.AccountName), request)
+		tools.DebugLog(fmt.Sprintf("Getted password (%s)", requestBody.PasswordName), request)
 		response.Write(responseBytes)
 	}
 }

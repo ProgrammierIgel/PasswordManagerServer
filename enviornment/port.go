@@ -12,7 +12,7 @@ func Port(defaultPort int) (int, error) {
 	portAsString := os.Getenv("PORT")
 
 	if portAsString == "" {
-		logger.Info(fmt.Sprintf("Server listen on default port %d", defaultPort))
+		logger.Info(fmt.Sprintf("[Enviornment Vars] Server listen on default port %d", defaultPort))
 		return defaultPort, nil
 	}
 
@@ -21,6 +21,6 @@ func Port(defaultPort int) (int, error) {
 		return 0, err
 	}
 	fmt.Println(port)
-	logger.Info(fmt.Sprintf("Server listen on env port %d", port))
+	logger.Info(fmt.Sprintf("[Enviornment Vars] Server listen on env port %d", port))
 	return port, nil
 }
