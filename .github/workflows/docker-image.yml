@@ -19,4 +19,8 @@ jobs:
     - name: Login to Docker
       run: echo ${{secrets.DockerAccessToken}} | docker login ghcr.io -u programmierigel --password-stdin
     - name: Build
-      run: make docker-push
+      run: make build-docker
+    - name: Rename
+      run: docker image tag programmierigel/pwmanager ghcr.io/programmierigel/pwmanager:latest
+    - name: Push
+      run: docker push ghcr.io/programmierigel/pwmanager:latest
