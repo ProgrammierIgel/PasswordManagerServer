@@ -24,7 +24,7 @@ jobs:
       run: make build
     - name: Add build to repo
       run: |
-            git config --global user.name "ProgrammierIgel"
+            git config --global user.name "Github Actions"
             git config --global user.email "${{github.MAIL}}"
 
             git add -A
