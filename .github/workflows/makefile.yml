@@ -17,5 +17,17 @@ jobs:
     - name: Install dependencies
       run: go mod download && go mod verify
 
+
+    - name: Delete build
+      run: rm -rf ./build/pwmanager.exe
     - name: Run check
       run: make build
+    - name: Add build to repo
+      run: |
+            git config --global user.name "ProgrammierIgel"
+            git config --global user.email "${{github.MAIL}}"
+
+            git add -A
+            git commit -m "Add build"
+            git push
+
