@@ -118,7 +118,7 @@ func (s *Store) AddNewAccount(account string, password string) error {
 }
 
 func (s *Store) DeleteAccount(account string, token string) error {
-	if s.CheckToken(token) {
+	if !s.CheckToken(token) {
 		logger.Warning(fmt.Sprintf("[STORE] Attemt to delete account %s account. Failed due to incorrect token.", account))
 		return fmt.Errorf("incorrect token")
 	}
@@ -172,6 +172,11 @@ func (s *Store) DeletePassword(token string, passwordName string) error {
 		return fmt.Errorf("incorrect token")
 	}
 	tokenValue := s.token[token]
+
+	if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) {
+		logger.Warning("[Store] Attempt to deleting non-existing password")
+		return fmt.Errorf("passwordname does not exist")
+	}
 
 	s.secrets[tokenValue.AccountName] = tools.RemoveStringFromMap(s.secrets[tokenValue.AccountName], passwordName)
 	logger.Warning(fmt.Sprintf("[STORE] Deleted %s password on account %s", passwordName, tokenValue.AccountName))
@@ -234,7 +239,7 @@ func (s *Store) GetUsername(token string, passwordName string) (string, error) {
 }
 
 func (s *Store) GetAllPasswordNamesOfAccount(token string) ([]string, error) {
-	if s.CheckToken(token) {
+	if !s.CheckToken(token) {
 		logger.Warning("[STORE] Attemt to get all registered passwords from account. Failed due to incorrect token to decryption.")
 		return make([]string, 0), fmt.Errorf("incorrect token")
 	}
@@ -294,7 +299,7 @@ func (s *Store) ChangeUsername(token string, passwordName string, newUsername st
 }
 
 func (s *Store) ChangeURL(token string, passwordName string, newURL string) error {
-	if s.CheckToken(token) {
+	if !s.CheckToken(token) {
 		logger.Warning(fmt.Sprintf("[STORE] Attemt to change URL to %s. Failed due to incorrect password.", newURL))
 		return fmt.Errorf("incorrect token")
 	}
@@ -308,9 +313,9 @@ func (s *Store) ChangeURL(token string, passwordName string, newURL string) erro
 
 	currentPasswordStruct := s.secrets[tokenValue.AccountName][passwordName]
 	s.secrets[tokenValue.AccountName][passwordName] = manager.Secret{
-		URL:      currentPasswordStruct.URL,
+		URL:      newURL,
 		Secret:   currentPasswordStruct.Secret,
-		Username: newURL,
+		Username: currentPasswordStruct.Username,
 	}
 	return nil
 }
