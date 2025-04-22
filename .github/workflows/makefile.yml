@@ -22,6 +22,13 @@ jobs:
       run: rm -rf ./build/pwmanager.exe
     - name: Run check
       run: make build && make coverage
+
+    - name: Coverage
+      run: |
+            mkdir -p ./coverage
+            go test -coverprofile=./coverage/coverage.out ./...
+            go tool cover -html=./coverage/coverage.out -o ./coverage/coverage.html
+            
     - name: Add build to repo
       run: |
             git config --global user.name "Github Actions"
