@@ -1,11 +1,10 @@
 name: Build
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+  workflow_run:
+      workflows: ["Coverage"]
+      types:
+        - completed
 jobs:
   build:
 
