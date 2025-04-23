@@ -10,10 +10,7 @@ import (
 )
 
 func main() {
-	port, err := enviornment.Port(3000)
-	if err != nil {
-		panic(err)
-	}
+	port := enviornment.Port(3000)
 
 	path := enviornment.Path(".")
 	password := enviornment.Password("123")
@@ -26,7 +23,7 @@ func main() {
 		Handler: router,
 	}
 
-	err = server.ListenAndServe()
+	err := server.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}

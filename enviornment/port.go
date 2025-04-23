@@ -8,19 +8,19 @@ import (
 	"github.com/programmierigel/pwmanager/logger"
 )
 
-func Port(defaultPort int) (int, error) {
+func Port(defaultPort int) int {
 	portAsString := os.Getenv("PORT")
 
 	if portAsString == "" {
-		logger.Info(fmt.Sprintf("Server listen on default port %d", defaultPort))
-		return defaultPort, nil
+		logger.Info(fmt.Sprintf("[Enviornment Vars] Server listen on default port %d", defaultPort))
+		return defaultPort
 	}
 
 	port, err := strconv.Atoi(portAsString)
 	if err != nil {
-		return 0, err
+		return defaultPort
 	}
 	fmt.Println(port)
-	logger.Info(fmt.Sprintf("Server listen on env port %d", port))
-	return port, nil
+	logger.Info(fmt.Sprintf("[Enviornment Vars] Server listen on env port %d", port))
+	return port
 }

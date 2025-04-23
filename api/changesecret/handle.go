@@ -29,17 +29,17 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		err = store.ChangePassword(requestBody.AccountName, requestBody.MasterPassword, requestBody.PasswordName, requestBody.NewSecret)
+		err = store.ChangePassword(requestBody.Token, requestBody.PasswordName, requestBody.NewSecret)
 
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to change secret (%s) on account %s. Cant change secret.", requestBody.PasswordName, requestBody.AccountName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to change secret (%s). Cant change secret.", requestBody.PasswordName), err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
-		tools.DebugLog(fmt.Sprintf("Changed secret (%s) on account %s", requestBody.PasswordName, requestBody.AccountName), request)
+		tools.DebugLog(fmt.Sprintf("Changed secret (%s)", requestBody.PasswordName), request)
 		response.Write([]byte(http.StatusText(http.StatusOK)))
 	}
 }

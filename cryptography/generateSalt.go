@@ -20,7 +20,7 @@ func GenerateSalt(length int) (string, error) {
 	// This is a secure random number generator suitable for cryptographic use
 	_, err := rand.Read(randomBytes)
 	if err != nil {
-		logger.Critiacal(fmt.Sprintf("failed to generate random bytes: %s", err.Error()))
+		logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] Failed to generate random bytes: %s", err.Error()))
 		return "", fmt.Errorf("failed to generate random bytes: %w", err)
 	}
 

@@ -35,7 +35,7 @@ func Handle(store storage.Store) httprouter.Handle {
 			tools.WarningLog(fmt.Sprintf("Attempt check password on account %s. Password is wrong. (%s)", requestBody.AccountName, requestBody.MasterPassword), err, request)
 			responseBody = ResponseBody{
 				Status: false,
-			} 
+			}
 		} else {
 			responseBody = ResponseBody{
 				Status: true,

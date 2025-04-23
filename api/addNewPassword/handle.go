@@ -29,17 +29,17 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		err = store.AddNewPassword(requestBody.MasterPassword, requestBody.AccountName, requestBody.PasswordName, requestBody.Password.Password, requestBody.Password.URL, requestBody.Password.Username)
+		err = store.AddNewPassword(requestBody.Token, requestBody.PasswordName, requestBody.Password.Password, requestBody.Password.URL, requestBody.Password.Username)
 
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to add new password (%s) on account %s. Cant add password.", requestBody.PasswordName, requestBody.AccountName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to add new password (%s) on account. Cant add password.", requestBody.PasswordName), err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
-		tools.DebugLog(fmt.Sprintf("Added new password (%s) to account %s", requestBody.PasswordName, requestBody.AccountName), request)
+		tools.DebugLog(fmt.Sprintf("Added new password (%s) to account", requestBody.PasswordName), request)
 		response.Write([]byte(http.StatusText(http.StatusOK)))
 	}
 }

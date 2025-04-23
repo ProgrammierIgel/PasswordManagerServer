@@ -1,10 +1,9 @@
 package addnewpassword
 
 type RequestBody struct {
-	PasswordName   string   `json:"passwordName"`
-	Password       Password `json:"passwordToAdd"`
-	AccountName    string   `json:"accountName"`
-	MasterPassword string   `json:"accountPassword"`
+	PasswordName string   `json:"passwordName"`
+	Password     Password `json:"passwordToAdd"`
+	Token        string   `json:"token"`
 }
 
 type Password struct {

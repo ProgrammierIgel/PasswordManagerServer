@@ -21,21 +21,21 @@ func Encrypt(plaintext, password string) (string, error) {
 	// Create AES cipher
 	block, err := aes.NewCipher(key[:])
 	if err != nil {
-		logger.Critiacal(fmt.Sprintf("EncryptionAES: %s",err.Error()))
+		logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] EncryptionAES: %s", err.Error()))
 		return "", err
 	}
 
 	// Create a new GCM mode
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		logger.Critiacal(fmt.Sprintf("EncryptionAES: %s",err.Error()))
+		logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] EncryptionAES: %s", err.Error()))
 		return "", err
 	}
 
 	// Generate a nonce (Number used ONCE)
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		logger.Critiacal(fmt.Sprintf("EncryptionAES: %s",err.Error()))
+		logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] EncryptionAES: %s", err.Error()))
 		return "", err
 	}
 

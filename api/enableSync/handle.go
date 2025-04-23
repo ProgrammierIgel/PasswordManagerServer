@@ -53,7 +53,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
 		hostPart := fmt.Sprintf("Run by Host %s (RemoteAddr: %s,\n Proto: %s,\n Pattern: %s,\n URL: %s,\n ReqURI: %s).", request.Host, request.RemoteAddr, request.Proto, request.Pattern, request.URL, request.RequestURI)
-		logger.Info(fmt.Sprintf("ENABLED SYNC: %s", hostPart))
+		logger.Info(fmt.Sprintf("[API] ENABLED SYNC: %s", hostPart))
 		response.Write(responseBytes)
 	}
 }
