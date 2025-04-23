@@ -30,4 +30,5 @@ jobs:
 
             git add -A
             git commit -m "Add build"
+            git pull
             git push
