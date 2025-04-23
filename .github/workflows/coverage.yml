@@ -22,7 +22,7 @@ jobs:
             mkdir -p ./coverage
             go test -coverprofile=./coverage/coverage.out ./...
             go tool cover -html=./coverage/coverage.out -o ./coverage/coverage.html
-            rem -rf ./storage/inmemory/secrets.json
+            rm -rf ./storage/inmemory/secrets.json
 
     - name: Add build to repo
       run: |
