@@ -1,4 +1,4 @@
-name: Makefile CI
+name: Build
 
 on:
   push:
@@ -17,6 +17,13 @@ jobs:
     - name: Install dependencies
       run: go mod download && go mod verify
 
+    - name: Init
+      run: |
+            git config --global user.name "Github Actions"
+            git config --global user.email "${{secrets.MAIL}}"
+
+    - name: Pull
+      run: git pull
 
     - name: Delete build
       run: rm -rf ./build/pwmanager.exe

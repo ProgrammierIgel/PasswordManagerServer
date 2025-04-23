@@ -1,4 +1,4 @@
-name: Makefile CI
+name: Coverage
 
 on: [push, pull_request]
 
@@ -9,6 +9,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Init
+      run: |
+            git config --global user.name "Github Actions"
+            git config --global user.email "${{secrets.MAIL}}"
+
+    - name: Pull
+      run: git pull
 
     - name: Install dependencies
       run: go mod download && go mod verify
@@ -25,10 +33,6 @@ jobs:
 
     - name: Add build to repo
       run: |
-            git config --global user.name "Github Actions"
-            git config --global user.email "${{secrets.MAIL}}"
-
             git add -A
             git commit -m "Add coverage"
-            git pull
             git push
