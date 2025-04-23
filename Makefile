@@ -5,7 +5,7 @@ analyze:
 	@go run honnef.co/go/tools/cmd/staticcheck@latest --checks=all ./...
 
 build: qa
-	@go build -o ./build/pwmanager.exe .
+	@GOOS=windows GOARCH=amd64 go build -o ./build/pwmanager.exe .
 
 build-docker:
 	@docker build -t programmierigel/pwmanager .

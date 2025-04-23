@@ -1,14 +1,7 @@
-name: Build
+name: Coverage
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
-  workflow_run:
-      workflows: ["Coverage"]
-      types:
-        - completed
+on: [push]
+
 jobs:
   build:
 
@@ -20,16 +13,22 @@ jobs:
     - name: Install dependencies
       run: go mod download && go mod verify
 
-    - name: Delete build
-      run: rm -rf ./build/pwmanager.exe
-    - name: Run check
-      run: make build
+
+    - name: Delete coverage
+      run: rm -rf ./coverage
+
+    - name: Run Coverage
+      run: |
+            mkdir -p ./coverage
+            go test -coverprofile=./coverage/coverage.out ./...
+            go tool cover -html=./coverage/coverage.out -o ./coverage/coverage.html
 
     - name: Add build to repo
       run: |
+
             git config --global user.name "Github Actions"
             git config --global user.email "${{secrets.MAIL}}"
 
             git add -A
-            git commit -m "Add build"
+            git commit -m "Add coverage"
             git push
