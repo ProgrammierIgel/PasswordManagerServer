@@ -1,6 +1,6 @@
-FROM golang:1.23-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
-RUN apt update
+RUN apk update
 
 WORKDIR /go/src
 
@@ -9,12 +9,12 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN GOOS=linux GOARCH=arm64 go build -o /go/bin/voting
+RUN GOOS=linux GOARCH=arm64 go build -o /go/bin/pwmanager
 
 # ---
 
 FROM alpine:latest
 
-COPY --from=builder /go/bin/voting /usr/local/bin/voting
+COPY --from=builder /go/bin/voting /usr/local/bin/pwmanager
 
-ENTRYPOINT [ "voting" ]
+ENTRYPOINT [ "pwmanager" ]
