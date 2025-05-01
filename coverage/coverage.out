@@ -225,13 +225,6 @@ github.com/programmierigel/pwmanager/cryptography/encryptSHA256.go:8.41,12.2 3 0
 github.com/programmierigel/pwmanager/cryptography/generateSalt.go:15.47,22.16 3 0
 github.com/programmierigel/pwmanager/cryptography/generateSalt.go:22.16,25.3 2 0
 github.com/programmierigel/pwmanager/cryptography/generateSalt.go:29.2,29.63 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:5.61,6.39 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:6.39,7.32 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:7.32,9.4 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:12.2,12.43 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:7.45,9.16 2 0
-github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:9.16,10.13 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:13.2,13.63 1 0
 github.com/programmierigel/pwmanager/enviornment/getPassword.go:9.46,12.20 2 1
 github.com/programmierigel/pwmanager/enviornment/getPassword.go:12.20,15.3 2 1
 github.com/programmierigel/pwmanager/enviornment/getPassword.go:16.2,17.17 2 1
@@ -267,6 +260,13 @@ github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:12
 github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:7.45,9.16 2 1
 github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:9.16,10.13 1 0
 github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:13.2,13.63 1 1
+github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:5.61,6.39 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:6.39,7.32 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:7.32,9.4 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:12.2,12.43 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:7.45,9.16 2 0
+github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:9.16,10.13 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:13.2,13.63 1 0
 github.com/programmierigel/pwmanager/logger/critical.go:10.26,15.2 3 0
 github.com/programmierigel/pwmanager/logger/debug.go:10.22,11.30 1 0
 github.com/programmierigel/pwmanager/logger/debug.go:11.30,13.3 1 0
