@@ -1,6 +1,6 @@
 FROM golang:1.23-alpine AS builder
 
-RUN apk update
+RUN apt update
 
 WORKDIR /go/src
 
