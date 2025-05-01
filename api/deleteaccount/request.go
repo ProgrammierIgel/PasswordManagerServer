@@ -1,6 +1,6 @@
 package deleteaccount
 
 type RequestBody struct {
-	Password    string `json:"password"`
+	Token       string `json:"token"`
 	AccountName string `json:"accountname"`
 }

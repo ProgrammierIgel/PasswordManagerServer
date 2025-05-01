@@ -32,7 +32,6 @@ func Handle(store storage.Store) httprouter.Handle {
 
 		response.Header().Set("Content-Type", "text/plain")
 		response.WriteHeader(http.StatusOK)
-		response.Header().Set("ok", "true")
 		tools.DebugLog("Successfully token devalued.", request)
 		response.Write([]byte(http.StatusText(http.StatusOK)))
 	}

@@ -18,6 +18,7 @@ import (
 	disablesync "github.com/programmierigel/pwmanager/api/disableSync"
 	enablesync "github.com/programmierigel/pwmanager/api/enableSync"
 	"github.com/programmierigel/pwmanager/api/getallpasswordsofaccount"
+	"github.com/programmierigel/pwmanager/api/getnumberofallregisteredtokens"
 	"github.com/programmierigel/pwmanager/api/getpassword"
 	"github.com/programmierigel/pwmanager/api/geturl"
 	"github.com/programmierigel/pwmanager/api/getusername"
@@ -56,5 +57,6 @@ func GetRouter(store storage.Store) *httprouter.Router {
 	router.POST("/createToken", createtoken.Handle(store))
 	router.POST("/devalueToken", devaluetoken.Handle(store))
 	router.POST("/checkToken", checktoken.Handle(store))
+	router.POST("/getNUmberOfAllRegistedTokens", getnumberofallregisteredtokens.Handle(store))
 	return router
 }

@@ -29,7 +29,7 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		err = store.DeleteAccount(requestBody.AccountName, requestBody.Password)
+		err = store.DeleteAccount(requestBody.AccountName, requestBody.Token)
 
 		if err != nil {
 			tools.WarningLog(fmt.Sprintf("Attempt to delete account %s. Cant delete account.", requestBody.AccountName), err, request)
