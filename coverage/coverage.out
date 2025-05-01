@@ -1,7 +1,7 @@
 mode: set
 github.com/programmierigel/pwmanager/main.go:12.13,27.16 8 0
 github.com/programmierigel/pwmanager/main.go:27.16,28.13 1 0
-github.com/programmierigel/pwmanager/api/router.go:31.56,60.2 26 0
+github.com/programmierigel/pwmanager/api/router.go:32.56,62.2 27 0
 github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:14.52,15.88 1 0
 github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:15.88,18.17 3 0
 github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:18.17,22.4 3 0
@@ -118,7 +118,7 @@ github.com/programmierigel/pwmanager/api/devaluetoken/handle.go:14.88,17.17 3 0
 github.com/programmierigel/pwmanager/api/devaluetoken/handle.go:17.17,21.4 3 0
 github.com/programmierigel/pwmanager/api/devaluetoken/handle.go:23.3,25.17 3 0
 github.com/programmierigel/pwmanager/api/devaluetoken/handle.go:25.17,29.4 3 0
-github.com/programmierigel/pwmanager/api/devaluetoken/handle.go:31.3,37.57 6 0
+github.com/programmierigel/pwmanager/api/devaluetoken/handle.go:31.3,36.57 5 0
 github.com/programmierigel/pwmanager/api/disableSync/handle.go:15.52,16.88 1 0
 github.com/programmierigel/pwmanager/api/disableSync/handle.go:16.88,20.17 3 0
 github.com/programmierigel/pwmanager/api/disableSync/handle.go:20.17,24.4 3 0
@@ -260,13 +260,6 @@ github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:12
 github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:7.45,9.16 2 1
 github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:9.16,10.13 1 0
 github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:13.2,13.63 1 1
-github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:5.61,6.39 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:6.39,7.32 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:7.32,9.4 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:12.2,12.43 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:7.45,9.16 2 0
-github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:9.16,10.13 1 0
-github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:13.2,13.63 1 0
 github.com/programmierigel/pwmanager/logger/critical.go:10.26,15.2 3 0
 github.com/programmierigel/pwmanager/logger/debug.go:10.22,11.30 1 0
 github.com/programmierigel/pwmanager/logger/debug.go:11.30,13.3 1 0
@@ -284,6 +277,13 @@ github.com/programmierigel/pwmanager/logger/isElementInSlice.go:12.2,12.43 1 0
 github.com/programmierigel/pwmanager/logger/warning.go:10.24,11.33 1 0
 github.com/programmierigel/pwmanager/logger/warning.go:11.33,13.3 1 0
 github.com/programmierigel/pwmanager/logger/warning.go:14.2,17.52 3 0
+github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:5.61,6.39 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:6.39,7.32 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:7.32,9.4 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go:12.2,12.43 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:7.45,9.16 2 0
+github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:9.16,10.13 1 0
+github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go:13.2,13.63 1 0
 github.com/programmierigel/pwmanager/tools/debugLog.go:10.48,13.2 2 0
 github.com/programmierigel/pwmanager/tools/isElementInMap.go:5.78,6.29 1 0
 github.com/programmierigel/pwmanager/tools/isElementInMap.go:6.29,7.22 1 0

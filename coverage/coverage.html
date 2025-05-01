@@ -702,7 +702,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                         return
                 }</span>
 
-                <span class="cov0" title="0">err = store.DeleteAccount(requestBody.AccountName, requestBody.Password)
+                <span class="cov0" title="0">err = store.DeleteAccount(requestBody.AccountName, requestBody.Token)
 
                 if err != nil </span><span class="cov0" title="0">{
                         tools.WarningLog(fmt.Sprintf("Attempt to delete account %s. Cant delete account.", requestBody.AccountName), err, request)
@@ -846,7 +846,6 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 response.Header().Set("Content-Type", "text/plain")
                 response.WriteHeader(http.StatusOK)
-                response.Header().Set("ok", "true")
                 tools.DebugLog("Successfully token devalued.", request)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
@@ -1337,6 +1336,7 @@ import (
         disablesync "github.com/programmierigel/pwmanager/api/disableSync"
         enablesync "github.com/programmierigel/pwmanager/api/enableSync"
         "github.com/programmierigel/pwmanager/api/getallpasswordsofaccount"
+        "github.com/programmierigel/pwmanager/api/getnumberofallregisteredtokens"
         "github.com/programmierigel/pwmanager/api/getpassword"
         "github.com/programmierigel/pwmanager/api/geturl"
         "github.com/programmierigel/pwmanager/api/getusername"
@@ -1375,6 +1375,7 @@ func GetRouter(store storage.Store) *httprouter.Router <span class="cov0" title=
         router.POST("/createToken", createtoken.Handle(store))
         router.POST("/devalueToken", devaluetoken.Handle(store))
         router.POST("/checkToken", checktoken.Handle(store))
+        router.POST("/getNUmberOfAllRegistedTokens", getnumberofallregisteredtokens.Handle(store))
         return router
 }</span>
 </pre>
