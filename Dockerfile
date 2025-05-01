@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 RUN apk update
 
@@ -13,8 +13,8 @@ RUN GOOS=linux GOARCH=amd64 go build -o /go/bin/voting
 
 # ---
 
-FROM alpine:3.21.2
+FROM alpine:latest
 
-COPY --from=builder /go/bin/voting /usr/local/bin/voting
+COPY --from=builder /go/bin/pwmanager /usr/local/bin/pwmanager
 
 ENTRYPOINT [ "voting" ]
