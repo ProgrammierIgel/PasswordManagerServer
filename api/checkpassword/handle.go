@@ -29,7 +29,7 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		err = store.CheckPassword(requestBody.AccountName, requestBody.MasterPassword)
+		err = store.CheckPassword(requestBody.AccountName, requestBody.MasterPassword, request.RemoteAddr)
 		var responseBody ResponseBody
 		if err != nil {
 			tools.WarningLog(fmt.Sprintf("Attempt check password on account %s. Password is wrong. (%s)", requestBody.AccountName, requestBody.MasterPassword), err, request)

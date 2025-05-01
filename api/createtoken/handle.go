@@ -29,7 +29,7 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		token, err := store.CreateToken(requestBody.AccountName, requestBody.Password)
+		token, err := store.CreateToken(requestBody.AccountName, requestBody.Password, request.RemoteAddr)
 
 		if err != nil {
 			tools.WarningLog(fmt.Sprintf("Attempt to create new token (%s). Cant create token.", requestBody.AccountName), err, request)

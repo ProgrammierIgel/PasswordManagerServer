@@ -43,7 +43,7 @@ func (m *mockStore) ChangeUsername(token string, passwordName string, newUsernam
 }
 
 // CheckPassword implements storage.Store.
-func (m *mockStore) CheckPassword(account string, password string) error {
+func (m *mockStore) CheckPassword(account string, password string, token string) error {
 	panic("unimplemented")
 }
 
@@ -53,7 +53,7 @@ func (m *mockStore) CheckToken(token string) bool {
 }
 
 // CreateToken implements storage.Store.
-func (m *mockStore) CreateToken(accountName string, masterpassword string) (string, error) {
+func (m *mockStore) CreateToken(accountName string, masterpassword string, extraParam string) (string, error) {
 	panic("unimplemented")
 }
 

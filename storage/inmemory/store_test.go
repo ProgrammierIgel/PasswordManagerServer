@@ -29,7 +29,7 @@ func TestAddNewAccount(t *testing.T) {
 		accountPassword := "examplePassword"
 		err := store1.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store1.CreateToken(accountName, accountPassword)
+		token, err := store1.CreateToken(accountName, accountPassword, "")
 
 		assert.Nil(t, err)
 		assert.NotNil(t, token)
@@ -60,12 +60,12 @@ func TestDeleteAccount(t *testing.T) {
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.NotNil(t, token)
 		assert.Nil(t, err)
 		err = store.DeleteAccount(accountName, token)
 		assert.Nil(t, err)
-		err = store.CheckPassword(accountName, accountPassword)
+		err = store.CheckPassword(accountName, accountPassword, "")
 		assert.Error(t, err, "unknown password")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
@@ -94,7 +94,7 @@ func TestDeleteAccount(t *testing.T) {
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.NotNil(t, token)
 		assert.Nil(t, err)
 		err = store.DeleteAccount("other account", token)
@@ -115,7 +115,7 @@ func TestAddNewPassword(t *testing.T) {
 		passwordName := "examplePasswordname"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		err = store.AddNewPassword(token, passwordName, passwordToAdd, "https://www.google.com", "exampeUsername")
 		assert.Nil(t, err)
@@ -136,7 +136,7 @@ func TestAddNewPassword(t *testing.T) {
 		passwordName := "examplePasswordname"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		err = store.AddNewPassword(token, passwordName, passwordToAdd, "https://www.google.com", "exampeUsername")
 		assert.Nil(t, err)
@@ -175,7 +175,7 @@ func TestDeletePassword(t *testing.T) {
 		passwordName := "examplePasswordname"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		err = store.AddNewPassword(token, passwordName, passwordToAdd, "https://www.google.com", "exampeUsername")
 		assert.Nil(t, err)
@@ -197,7 +197,7 @@ func TestDeletePassword(t *testing.T) {
 		passwordName := "examplePasswordname"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		err = store.AddNewPassword(token, passwordName, passwordToAdd, "https://www.google.com", "exampeUsername")
 		assert.Nil(t, err)
@@ -216,7 +216,7 @@ func TestDeletePassword(t *testing.T) {
 		passwordName := "examplePasswordname"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		err = store.DeletePassword(token, passwordName)
 		assert.Error(t, err, "passwordname does not exist")
@@ -234,7 +234,7 @@ func TestGetPassword(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, pasword := "anyPasswordName", "anyPassword"
 		err = store.AddNewPassword(token, passwordName, pasword, "", "")
@@ -252,7 +252,7 @@ func TestGetPassword(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, pasword := "anyPasswordName", "anyPassword"
 		err = store.AddNewPassword(token, passwordName, pasword, "", "")
@@ -271,7 +271,7 @@ func TestGetPassword(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, pasword := "anyPasswordName", "anyPassword"
 		err = store.AddNewPassword(token, passwordName, pasword, "", "")
@@ -293,7 +293,7 @@ func TestGetURL(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, passwordURL := "anyPasswordName", "anyURL"
 		err = store.AddNewPassword(token, passwordName, "", passwordURL, "")
@@ -310,7 +310,7 @@ func TestGetURL(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, passwordURL := "anyPasswordName", "anyURL"
 		err = store.AddNewPassword(token, passwordName, "", passwordURL, "")
@@ -329,7 +329,7 @@ func TestGetURL(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, passwordURL := "anyPasswordName", "anyURL"
 		err = store.AddNewPassword(token, passwordName, "", passwordURL, "")
@@ -349,7 +349,7 @@ func TestGetUsername(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, username := "anyPasswordName", "anyUsername"
 		err = store.AddNewPassword(token, passwordName, "", "", username)
@@ -367,7 +367,7 @@ func TestGetUsername(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, username := "anyPasswordName", "anyUsername"
 		err = store.AddNewPassword(token, passwordName, "", "", username)
@@ -388,7 +388,7 @@ func TestGetUsername(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, username := "anyPasswordName", "anyUsername"
 		err = store.AddNewPassword(token, passwordName, "", "", username)
@@ -410,7 +410,7 @@ func TestGetAllPasswordNamesOfAccount(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		somePasswordNames := []string{
 			"anyPasswordName1",
@@ -449,7 +449,7 @@ func TestGetAllPasswordNamesOfAccount(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName := "any PasswordName"
 		err = store.AddNewPassword(token, passwordName, "", "", "")
@@ -468,7 +468,7 @@ func TestGetAllPasswordNamesOfAccount(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		gettedPasswordNames, err := store.GetAllPasswordNamesOfAccount(token)
 		assert.Nil(t, err)
@@ -653,7 +653,7 @@ func TestChangeUsername(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, username := "anyPasswordName", "anyUsername"
 		err = store.AddNewPassword(token, passwordName, "", "", username)
@@ -679,7 +679,7 @@ func TestChangeUsername(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, username := "anyPasswordName", "anyUsername"
 		err = store.AddNewPassword(token, passwordName, "", "", username)
@@ -706,7 +706,7 @@ func TestChangeUsername(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, username := "anyPasswordName", "anyUsername"
 		err = store.AddNewPassword(token, passwordName, "", "", username)
@@ -735,7 +735,7 @@ func TestChangeURL(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, URL := "anyPasswordName", "anyURL"
 		err = store.AddNewPassword(token, passwordName, "", URL, "")
@@ -760,7 +760,7 @@ func TestChangeURL(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, URL := "anyPasswordName", "anyURL"
 		err = store.AddNewPassword(token, passwordName, "", URL, "")
@@ -785,7 +785,7 @@ func TestChangeURL(t *testing.T) {
 		accountName, accountPassword := "any AccountName", "any Password"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, URL := "anyPasswordName", "anyURL"
 		err = store.AddNewPassword(token, passwordName, "", URL, "")
@@ -814,7 +814,7 @@ func TestChangePassword(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, pasword := "anyPasswordName", "anyPassword"
 		err = store.AddNewPassword(token, passwordName, pasword, "", "")
@@ -843,7 +843,7 @@ func TestChangePassword(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, pasword := "anyPasswordName", "anyPassword"
 		err = store.AddNewPassword(token, passwordName, pasword, "", "")
@@ -872,7 +872,7 @@ func TestChangePassword(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		passwordName, pasword := "anyPasswordName", "anyPassword"
 		err = store.AddNewPassword(token, passwordName, pasword, "", "")
@@ -933,7 +933,7 @@ func TestCreateToken(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		assert.NotNil(t, token)
 
@@ -952,7 +952,7 @@ func TestCreateToken(t *testing.T) {
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		incorrectPassword := "incorrectPassword"
-		token, err := store.CreateToken(accountName, incorrectPassword)
+		token, err := store.CreateToken(accountName, incorrectPassword, "")
 		assert.Error(t, err, "unknown password or account")
 		assert.Equal(t, token, "")
 
@@ -970,7 +970,7 @@ func TestCreateToken(t *testing.T) {
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		unknownAccountname := "unknownAccountname"
-		token, err := store.CreateToken(unknownAccountname, accountPassword)
+		token, err := store.CreateToken(unknownAccountname, accountPassword, "")
 		assert.Error(t, err, "unkonown password or account")
 		assert.Equal(t, token, "")
 
@@ -986,10 +986,10 @@ func TestCreateToken(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token1, err := store.CreateToken(accountName, accountPassword)
+		token1, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		assert.NotNil(t, token1)
-		token2, err := store.CreateToken(accountName, accountPassword)
+		token2, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		assert.NotNil(t, token2)
 
@@ -1012,10 +1012,10 @@ func TestCreateToken(t *testing.T) {
 		assert.Nil(t, err)
 		err = store.AddNewAccount(accountName2, accountPassword2)
 		assert.Nil(t, err)
-		token1, err := store.CreateToken(accountName1, accountPassword1)
+		token1, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
 		assert.NotNil(t, token1)
-		token2, err := store.CreateToken(accountName2, accountPassword2)
+		token2, err := store.CreateToken(accountName2, accountPassword2, "")
 		assert.Nil(t, err)
 		assert.NotNil(t, token2)
 
@@ -1038,7 +1038,7 @@ func TestCheckToken(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 
 		correct := store.CheckToken(token)
@@ -1064,7 +1064,7 @@ func TestCheckToken(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 
 		correct := store.CheckToken(token)
@@ -1085,7 +1085,7 @@ func TestCheckToken(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 
 		correct := store.CheckToken(token)
@@ -1107,7 +1107,7 @@ func TestCheckToken(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 
 		correct := store.CheckToken(token)
@@ -1130,7 +1130,7 @@ func TestCheckToken(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 
 		correct := store.CheckToken(token)
@@ -1154,7 +1154,7 @@ func TestDevalueToken(t *testing.T) {
 		accountName, accountPassword := "anyAccountName", "anyPassword"
 		err := store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
-		token, err := store.CreateToken(accountName, accountPassword)
+		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 
 		correct := store.CheckToken(token)
@@ -1194,7 +1194,7 @@ func TestDevalueAllTokens(t *testing.T) {
 		accountName1, accountPassword1 := "anyAccountName1", "anyPassword1"
 		err := store.AddNewAccount(accountName1, accountPassword1)
 		assert.Nil(t, err)
-		token1, err := store.CreateToken(accountName1, accountPassword1)
+		token1, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
 		correct := store.CheckToken(token1)
 		assert.True(t, correct)
@@ -1202,11 +1202,11 @@ func TestDevalueAllTokens(t *testing.T) {
 		accountName2, accountPassword2 := "anyAccountName2", "anyPassword2"
 		err = store.AddNewAccount(accountName2, accountPassword2)
 		assert.Nil(t, err)
-		token2, err := store.CreateToken(accountName2, accountPassword2)
+		token2, err := store.CreateToken(accountName2, accountPassword2, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token2)
 		assert.True(t, correct)
-		token3, err := store.CreateToken(accountName2, accountPassword2)
+		token3, err := store.CreateToken(accountName2, accountPassword2, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token3)
 		assert.True(t, correct)
@@ -1230,7 +1230,7 @@ func TestDevalueAllTokens(t *testing.T) {
 		accountName1, accountPassword1 := "anyAccountName1", "anyPassword1"
 		err := store.AddNewAccount(accountName1, accountPassword1)
 		assert.Nil(t, err)
-		token1, err := store.CreateToken(accountName1, accountPassword1)
+		token1, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
 		correct := store.CheckToken(token1)
 		assert.True(t, correct)
@@ -1238,11 +1238,11 @@ func TestDevalueAllTokens(t *testing.T) {
 		accountName2, accountPassword2 := "anyAccountName2", "anyPassword2"
 		err = store.AddNewAccount(accountName2, accountPassword2)
 		assert.Nil(t, err)
-		token2, err := store.CreateToken(accountName2, accountPassword2)
+		token2, err := store.CreateToken(accountName2, accountPassword2, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token2)
 		assert.True(t, correct)
-		token3, err := store.CreateToken(accountName2, accountPassword2)
+		token3, err := store.CreateToken(accountName2, accountPassword2, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token3)
 		assert.True(t, correct)
@@ -1273,22 +1273,22 @@ func TestDevalueAllTokensOfAccount(t *testing.T) {
 		accountName2, accountPassword2 := "anyAccountName2", "anyPassword2"
 		err := store.AddNewAccount(accountName1, accountPassword1)
 		assert.Nil(t, err)
-		token1, err := store.CreateToken(accountName1, accountPassword1)
+		token1, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
 		correct := store.CheckToken(token1)
 		assert.True(t, correct)
-		token2, err := store.CreateToken(accountName1, accountPassword1)
+		token2, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token2)
 		assert.True(t, correct)
-		token3, err := store.CreateToken(accountName1, accountPassword1)
+		token3, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token3)
 		assert.True(t, correct)
 
 		err = store.AddNewAccount(accountName2, accountPassword2)
 		assert.Nil(t, err)
-		token4, err := store.CreateToken(accountName2, accountPassword2)
+		token4, err := store.CreateToken(accountName2, accountPassword2, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token4)
 		assert.True(t, correct)
@@ -1311,22 +1311,22 @@ func TestDevalueAllTokensOfAccount(t *testing.T) {
 		accountName2, accountPassword2 := "anyAccountName2", "anyPassword2"
 		err := store.AddNewAccount(accountName1, accountPassword1)
 		assert.Nil(t, err)
-		token1, err := store.CreateToken(accountName1, accountPassword1)
+		token1, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
 		correct := store.CheckToken(token1)
 		assert.True(t, correct)
-		token2, err := store.CreateToken(accountName1, accountPassword1)
+		token2, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token2)
 		assert.True(t, correct)
-		token3, err := store.CreateToken(accountName1, accountPassword1)
+		token3, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token3)
 		assert.True(t, correct)
 
 		err = store.AddNewAccount(accountName2, accountPassword2)
 		assert.Nil(t, err)
-		token4, err := store.CreateToken(accountName2, accountPassword2)
+		token4, err := store.CreateToken(accountName2, accountPassword2, "")
 		assert.Nil(t, err)
 		correct = store.CheckToken(token4)
 		assert.True(t, correct)

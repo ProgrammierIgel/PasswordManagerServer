@@ -16,23 +16,25 @@ import (
 )
 
 type Store struct {
-	file                string
-	decryptionPasswords map[string]manager.Password
-	secrets             map[string]map[string]manager.Secret
-	syncDisabled        bool
-	password            string
-	token               map[string]manager.Token
+	file                 string
+	decryptionPasswords  map[string]manager.Password
+	secrets              map[string]map[string]manager.Secret
+	syncDisabled         bool
+	password             string
+	token                map[string]manager.Token
+	remoteRequestAddress map[string]map[string]manager.RemoteRequestAddress
 }
 
 func New(path string, password string) *Store {
 
 	store := &Store{
-		file:                fmt.Sprintf("%s/secrets.json", path),
-		decryptionPasswords: make(map[string]manager.Password),
-		secrets:             make(map[string]map[string]manager.Secret),
-		syncDisabled:        false,
-		password:            password,
-		token:               make(map[string]manager.Token),
+		file:                 fmt.Sprintf("%s/secrets.json", path),
+		decryptionPasswords:  make(map[string]manager.Password),
+		secrets:              make(map[string]map[string]manager.Secret),
+		syncDisabled:         false,
+		password:             password,
+		token:                make(map[string]manager.Token),
+		remoteRequestAddress: make(map[string]map[string]manager.RemoteRequestAddress),
 	}
 	store.SyncFromFile()
 	logger.Info("[STORE] New Store was created")
@@ -373,10 +375,10 @@ func (s *Store) ChangePasswordName(token string, passwordName string, newPasswor
 	return nil
 }
 
-func (s *Store) CreateToken(accountName string, masterpassword string) (string, error) {
+func (s *Store) CreateToken(accountName string, masterpassword string, remoteAddress string) (string, error) {
 	currentTime := time.Now()
 
-	err := s.CheckPassword(accountName, masterpassword)
+	err := s.CheckPassword(accountName, masterpassword, remoteAddress)
 	if err != nil {
 		logger.Warning(fmt.Sprintf("[STORE] Attemt to create token on account %s. Failed due to incorrect password.", accountName))
 		return "", err
@@ -420,12 +422,54 @@ func (s *Store) DevalueToken(token string) {
 	s.token = tools.RemoveTokenFromMap(token, s.token)
 }
 
-func (s *Store) CheckPassword(account string, password string) error {
+func (s *Store) CheckPassword(account string, password string, remoteAddress string) error {
+	currentTime := time.Now()
 	s.SyncFromFile()
+	if s.remoteRequestAddress[account] == nil {
+		s.remoteRequestAddress[account] = make(map[string]manager.RemoteRequestAddress)
+	}
+	accessess := s.remoteRequestAddress[account][remoteAddress].NumberOfAccessess
+	timestamp := s.remoteRequestAddress[account][remoteAddress].LastRequest
+
+	switch {
+	case accessess > 3:
+		if currentTime.UnixMilli()-timestamp.UnixMilli() < time.Minute.Milliseconds()*5 {
+			logger.Warning("[STORE] Too many tries to check password! Must wait!")
+			return fmt.Errorf("too many tries! please wait")
+		}
+	case accessess > 6:
+		if currentTime.UnixMilli()-timestamp.UnixMilli() < time.Hour.Milliseconds() {
+			logger.Warning("[STORE] Too many tries to check password! Must wait!")
+			return fmt.Errorf("too many tries! please wait")
+		}
+	case accessess > 9:
+		if currentTime.UnixMilli()-timestamp.UnixMilli() < time.Hour.Milliseconds()*24 {
+			logger.Warning("[STORE] Too many tries to check password! Must wait!")
+			return fmt.Errorf("too many tries! please wait")
+		}
+
+	}
+
 	salt := s.decryptionPasswords[account].Salt
 	if s.decryptionPasswords[account].PasswordHash != cryptography.EncryptSHA256(password+salt) {
+		s.remoteRequestAddress[account][remoteAddress] = manager.RemoteRequestAddress{
+			LastRequest:       currentTime,
+			NumberOfAccessess: accessess + 1,
+		}
+
 		return fmt.Errorf("unknown password")
 	}
+
+	
+	remainingRequests := make(map[string]manager.RemoteRequestAddress)
+	for request, requestStruct := range s.remoteRequestAddress[account] {
+		if remoteAddress == request {
+			continue
+		}
+		remainingRequests[request] = requestStruct
+	}
+
+	s.remoteRequestAddress[account] = remainingRequests
 	return nil
 }
 
