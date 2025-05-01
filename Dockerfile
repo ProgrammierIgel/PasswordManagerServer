@@ -9,12 +9,12 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN GOOS=linux GOARCH=amd64 go build -o /go/bin/pwmanager
+RUN GOOS=linux GOARCH=amd64 go build -o /go/bin/pwmanager.exe .
 
 # ---
 
 FROM alpine:latest
 
-COPY --from=builder /go/bin/ /usr/local/bin/pwmanager
+COPY --from=builder /go/bin/ /usr/local/bin/
 
 ENTRYPOINT [ "pwmanager" ]
