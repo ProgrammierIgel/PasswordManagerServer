@@ -460,7 +460,6 @@ func (s *Store) CheckPassword(account string, password string, remoteAddress str
 		return fmt.Errorf("unknown password")
 	}
 
-	
 	remainingRequests := make(map[string]manager.RemoteRequestAddress)
 	for request, requestStruct := range s.remoteRequestAddress[account] {
 		if remoteAddress == request {
@@ -502,4 +501,23 @@ func (s *Store) DevalueAllTokensOfAccount(token string) error {
 	s.token = remainingTokens
 	logger.Debug(fmt.Sprintf("[STORE] Successfully all tokens of account %s devalued", accountName))
 	return nil
+}
+
+func (s *Store) GetAllActiveTokens(token string) (uint, error) {
+	if !s.CheckToken(token) {
+		logger.Warning("[STORE] Attemt to get the number of all active tokens %s. Failed due to incorrect token.")
+		return 0, fmt.Errorf("incorrect token")
+	}
+	tokenValue := s.token[token]
+	numberOfRegisteredTokens := uint(0)
+	for t, v := range s.token {
+		if v.AccountName == tokenValue.AccountName {
+			if s.CheckToken(t) {
+				numberOfRegisteredTokens += 1
+			}
+		}
+		continue
+	}
+	logger.Info("[STORE] Successuly number of all active tokens returned")
+	return numberOfRegisteredTokens, nil
 }

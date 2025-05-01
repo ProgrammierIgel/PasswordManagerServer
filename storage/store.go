@@ -16,6 +16,7 @@ type Store interface {
 	ChangePasswordName(token string, passwordName string, newPasswordName string) error
 
 	CheckToken(token string) bool
+	GetAllActiveTokens(token string) (uint, error)
 	CreateToken(accountName string, masterpassword string, remoteAddress string) (string, error)
 	DevalueToken(token string)
 	DevalueAllTokensOfAccount(token string) error
