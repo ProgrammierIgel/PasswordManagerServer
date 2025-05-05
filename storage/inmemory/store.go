@@ -251,7 +251,7 @@ func (s *Store) GetAllPasswordNamesOfAccount(token string) ([]string, error) {
 	for name := range s.secrets[tokenValue.AccountName] {
 		allPasswordNames = append(allPasswordNames, name)
 	}
-	logger.Debug(fmt.Sprintf("[STORE] All PasswordNames of Account %s returned", tokenValue.AccountName))
+	logger.Info(fmt.Sprintf("[STORE] All PasswordNames of Account %s returned", tokenValue.AccountName))
 	return allPasswordNames, nil
 
 }
@@ -393,7 +393,7 @@ func (s *Store) CreateToken(accountName string, masterpassword string, remoteAdd
 		AccountName:    accountName,
 		MasterPassword: masterpassword,
 	}
-	logger.Debug(fmt.Sprintf("[STORE] Successfully token on account %s created.", accountName))
+	logger.Info(fmt.Sprintf("[STORE] Successfully token on account %s created.", accountName))
 	return newID, nil
 
 }
@@ -401,12 +401,12 @@ func (s *Store) CreateToken(accountName string, masterpassword string, remoteAdd
 func (s *Store) CheckToken(token string) bool {
 	currentTime := time.Now()
 	if !tools.IsIDInMap(token, s.token) {
-		logger.Debug("[STORE] token to check not registered")
+		logger.Info("[STORE] token to check not registered")
 		return false
 	}
 	oneHourInMillisec := int64(3600000)
 	if currentTime.UnixMilli()-s.token[token].Timestamp.UnixMilli() > oneHourInMillisec {
-		logger.Debug("[STORE] time of token to check is over")
+		logger.Info("[STORE] time of token to check is over")
 		s.token = tools.RemoveTokenFromMap(token, s.token)
 		return false
 	}
@@ -418,7 +418,7 @@ func (s *Store) DevalueToken(token string) {
 		return
 	}
 
-	defer logger.Debug((fmt.Sprintf("[STORE] Successfully token from account %s devalued", s.token[token].AccountName)))
+	defer logger.Info((fmt.Sprintf("[STORE] Successfully token from account %s devalued", s.token[token].AccountName)))
 	s.token = tools.RemoveTokenFromMap(token, s.token)
 }
 
@@ -499,7 +499,7 @@ func (s *Store) DevalueAllTokensOfAccount(token string) error {
 		remainingTokens[tokenIterator] = tokenValue
 	}
 	s.token = remainingTokens
-	logger.Debug(fmt.Sprintf("[STORE] Successfully all tokens of account %s devalued", accountName))
+	logger.Info(fmt.Sprintf("[STORE] Successfully all tokens of account %s devalued", accountName))
 	return nil
 }
 
