@@ -123,7 +123,7 @@
 				
 				<option value="file33">github.com/programmierigel/pwmanager/logger/critical.go (100.0%)</option>
 				
-				<option value="file34">github.com/programmierigel/pwmanager/logger/debug.go (80.0%)</option>
+				<option value="file34">github.com/programmierigel/pwmanager/logger/debug.go (0.0%)</option>
 				
 				<option value="file35">github.com/programmierigel/pwmanager/logger/getLogLevel.go (83.3%)</option>
 				
@@ -1678,11 +1678,11 @@ import (
         terminalcolor "github.com/programmierigel/pwmanager/logger/terminalColor"
 )
 
-func Debug(s string) <span class="cov8" title="1">{
+func Debug(s string) <span class="cov0" title="0">{
         if GetLogLevel() != "debug" </span><span class="cov0" title="0">{
                 return
         }</span>
-        <span class="cov8" title="1">currentTime := time.Now()
+        <span class="cov0" title="0">currentTime := time.Now()
         msg := fmt.Sprintf("[DEBUG]: %s: ***%s***", currentTime.Format("15:04:05 - 02.01.2006"), s)
 
         fmt.Println(terminalcolor.SetColor(msg, "Gray"))</span>
@@ -2085,7 +2085,7 @@ func (s *Store) GetAllPasswordNamesOfAccount(token string) ([]string, error) <sp
         for name := range s.secrets[tokenValue.AccountName] </span><span class="cov8" title="1">{
                 allPasswordNames = append(allPasswordNames, name)
         }</span>
-        <span class="cov8" title="1">logger.Debug(fmt.Sprintf("[STORE] All PasswordNames of Account %s returned", tokenValue.AccountName))
+        <span class="cov8" title="1">logger.Info(fmt.Sprintf("[STORE] All PasswordNames of Account %s returned", tokenValue.AccountName))
         return allPasswordNames, nil</span>
 
 }
@@ -2227,7 +2227,7 @@ func (s *Store) CreateToken(accountName string, masterpassword string, remoteAdd
                 AccountName:    accountName,
                 MasterPassword: masterpassword,
         }
-        logger.Debug(fmt.Sprintf("[STORE] Successfully token on account %s created.", accountName))
+        logger.Info(fmt.Sprintf("[STORE] Successfully token on account %s created.", accountName))
         return newID, nil</span>
 
 }
@@ -2235,12 +2235,12 @@ func (s *Store) CreateToken(accountName string, masterpassword string, remoteAdd
 func (s *Store) CheckToken(token string) bool <span class="cov8" title="1">{
         currentTime := time.Now()
         if !tools.IsIDInMap(token, s.token) </span><span class="cov8" title="1">{
-                logger.Debug("[STORE] token to check not registered")
+                logger.Info("[STORE] token to check not registered")
                 return false
         }</span>
         <span class="cov8" title="1">oneHourInMillisec := int64(3600000)
         if currentTime.UnixMilli()-s.token[token].Timestamp.UnixMilli() &gt; oneHourInMillisec </span><span class="cov0" title="0">{
-                logger.Debug("[STORE] time of token to check is over")
+                logger.Info("[STORE] time of token to check is over")
                 s.token = tools.RemoveTokenFromMap(token, s.token)
                 return false
         }</span>
@@ -2252,7 +2252,7 @@ func (s *Store) DevalueToken(token string) <span class="cov8" title="1">{
                 return
         }</span>
 
-        <span class="cov8" title="1">defer logger.Debug((fmt.Sprintf("[STORE] Successfully token from account %s devalued", s.token[token].AccountName)))
+        <span class="cov8" title="1">defer logger.Info((fmt.Sprintf("[STORE] Successfully token from account %s devalued", s.token[token].AccountName)))
         s.token = tools.RemoveTokenFromMap(token, s.token)</span>
 }
 
@@ -2333,7 +2333,7 @@ func (s *Store) DevalueAllTokensOfAccount(token string) error <span class="cov8"
                 <span class="cov8" title="1">remainingTokens[tokenIterator] = tokenValue</span>
         }
         <span class="cov8" title="1">s.token = remainingTokens
-        logger.Debug(fmt.Sprintf("[STORE] Successfully all tokens of account %s devalued", accountName))
+        logger.Info(fmt.Sprintf("[STORE] Successfully all tokens of account %s devalued", accountName))
         return nil</span>
 }
 
