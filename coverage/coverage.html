@@ -1283,8 +1283,8 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 }
 
                 responseBytes, err := json.Marshal(responseBody)
-                tools.WarningLog("Attempt to get is sync disabled variable. Cant marshal password struct. SYNC IS STILL ENABLED", err, request)
                 if err != nil </span><span class="cov0" title="0">{
+                        tools.WarningLog("Attempt to get is sync disabled variable. Cant marshal password struct. SYNC IS STILL ENABLED", err, request)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
