@@ -20,8 +20,8 @@ func Handle(store storage.Store) httprouter.Handle {
 		}
 
 		responseBytes, err := json.Marshal(responseBody)
-		tools.WarningLog("Attempt to get is sync disabled variable. Cant marshal password struct. SYNC IS STILL ENABLED", err, request)
 		if err != nil {
+			tools.WarningLog("Attempt to get is sync disabled variable. Cant marshal password struct. SYNC IS STILL ENABLED", err, request)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
