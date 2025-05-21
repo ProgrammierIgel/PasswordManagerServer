@@ -57,6 +57,6 @@ func GetRouter(store storage.Store) *httprouter.Router {
 	router.POST("/createToken", createtoken.Handle(store))
 	router.POST("/devalueToken", devaluetoken.Handle(store))
 	router.POST("/checkToken", checktoken.Handle(store))
-	router.POST("/getNUmberOfAllRegistedTokens", getnumberofallregisteredtokens.Handle(store))
+	router.POST("/getNumberOfAllRegisteredTokens", getnumberofallregisteredtokens.Handle(store))
 	return router
 }

@@ -9,7 +9,7 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN GOOS=linux GOARCH=amd64 go build -o /go/bin/pwmanager.exe .
+RUN GOOS=linux GOARCH=amd64 go build -o /go/bin/pwmanager .
 
 # ---
 
