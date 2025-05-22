@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine AS builder
+FROM --platform=linux/arm64 golang:1.24-alpine AS builder
 
 RUN apk update
 
@@ -13,7 +13,7 @@ RUN GOOS=linux GOARCH=arm go build -o /go/bin/pwmanager
 
 # ---
 
-FROM alpine:latest
+FROM --platform=linux/arm64  alpine:latest
 
 COPY --from=builder /go/bin/ /usr/local/bin/
 
