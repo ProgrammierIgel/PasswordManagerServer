@@ -1,6 +1,6 @@
 FROM --platform=linux/arm64 golang:1.24-alpine AS builder
 
-RUN apk update
+RUN apt update
 
 WORKDIR /go/src
 
