@@ -1,7 +1,6 @@
 mode: set
 github.com/programmierigel/pwmanager/main.go:12.13,27.16 8 0
 github.com/programmierigel/pwmanager/main.go:27.16,28.13 1 0
-github.com/programmierigel/pwmanager/api/router.go:32.56,62.2 27 0
 github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:14.52,15.88 1 0
 github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:15.88,18.17 3 0
 github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:18.17,22.4 3 0
@@ -10,14 +9,7 @@ github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:26.17,30.4 3 0
 github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:32.3,34.17 2 0
 github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:34.17,38.4 3 0
 github.com/programmierigel/pwmanager/api/addNewAccount/handle.go:40.3,44.57 5 0
-github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:14.52,15.88 1 0
-github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:15.88,18.17 3 0
-github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:18.17,22.4 3 0
-github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:24.3,26.17 3 0
-github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:26.17,30.4 3 0
-github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:32.3,34.17 2 0
-github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:34.17,38.4 3 0
-github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:40.3,43.57 4 0
+github.com/programmierigel/pwmanager/api/router.go:32.56,62.2 27 0
 github.com/programmierigel/pwmanager/api/changepasswordname/handle.go:14.52,15.88 1 0
 github.com/programmierigel/pwmanager/api/changepasswordname/handle.go:15.88,18.17 3 0
 github.com/programmierigel/pwmanager/api/changepasswordname/handle.go:18.17,22.4 3 0
@@ -26,6 +18,14 @@ github.com/programmierigel/pwmanager/api/changepasswordname/handle.go:26.17,30.4
 github.com/programmierigel/pwmanager/api/changepasswordname/handle.go:32.3,34.17 2 0
 github.com/programmierigel/pwmanager/api/changepasswordname/handle.go:34.17,38.4 3 0
 github.com/programmierigel/pwmanager/api/changepasswordname/handle.go:40.3,43.57 4 0
+github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:14.52,15.88 1 0
+github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:15.88,18.17 3 0
+github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:18.17,22.4 3 0
+github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:24.3,26.17 3 0
+github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:26.17,30.4 3 0
+github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:32.3,34.17 2 0
+github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:34.17,38.4 3 0
+github.com/programmierigel/pwmanager/api/addNewPassword/handle.go:40.3,43.57 4 0
 github.com/programmierigel/pwmanager/api/changesecret/handle.go:14.52,15.88 1 0
 github.com/programmierigel/pwmanager/api/changesecret/handle.go:15.88,18.17 3 0
 github.com/programmierigel/pwmanager/api/changesecret/handle.go:18.17,22.4 3 0
@@ -199,10 +199,6 @@ github.com/programmierigel/pwmanager/api/syncToFile/handle.go:11.52,12.75 1 0
 github.com/programmierigel/pwmanager/api/syncToFile/handle.go:12.75,15.17 2 0
 github.com/programmierigel/pwmanager/api/syncToFile/handle.go:15.17,19.4 3 0
 github.com/programmierigel/pwmanager/api/syncToFile/handle.go:20.3,23.43 3 0
-github.com/programmierigel/pwmanager/api/syncfromfile/handle.go:11.52,12.75 1 0
-github.com/programmierigel/pwmanager/api/syncfromfile/handle.go:12.75,15.17 2 0
-github.com/programmierigel/pwmanager/api/syncfromfile/handle.go:15.17,19.4 3 0
-github.com/programmierigel/pwmanager/api/syncfromfile/handle.go:20.3,23.43 3 0
 github.com/programmierigel/pwmanager/cryptography/decryptAES.go:13.64,19.16 3 0
 github.com/programmierigel/pwmanager/cryptography/decryptAES.go:19.16,21.3 1 0
 github.com/programmierigel/pwmanager/cryptography/decryptAES.go:24.2,25.16 2 0
@@ -225,6 +221,10 @@ github.com/programmierigel/pwmanager/cryptography/encryptSHA256.go:8.41,12.2 3 0
 github.com/programmierigel/pwmanager/cryptography/generateSalt.go:15.47,22.16 3 0
 github.com/programmierigel/pwmanager/cryptography/generateSalt.go:22.16,25.3 2 0
 github.com/programmierigel/pwmanager/cryptography/generateSalt.go:29.2,29.63 1 0
+github.com/programmierigel/pwmanager/api/syncfromfile/handle.go:11.52,12.75 1 0
+github.com/programmierigel/pwmanager/api/syncfromfile/handle.go:12.75,15.17 2 0
+github.com/programmierigel/pwmanager/api/syncfromfile/handle.go:15.17,19.4 3 0
+github.com/programmierigel/pwmanager/api/syncfromfile/handle.go:20.3,23.43 3 0
 github.com/programmierigel/pwmanager/enviornment/getPassword.go:9.46,12.20 2 1
 github.com/programmierigel/pwmanager/enviornment/getPassword.go:12.20,15.3 2 1
 github.com/programmierigel/pwmanager/enviornment/getPassword.go:16.2,17.17 2 1
