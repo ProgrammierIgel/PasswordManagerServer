@@ -119,7 +119,7 @@
 				
 				<option value="file31">github.com/programmierigel/pwmanager/enviornment/path.go (100.0%)</option>
 				
-				<option value="file32">github.com/programmierigel/pwmanager/enviornment/port.go (90.0%)</option>
+				<option value="file32">github.com/programmierigel/pwmanager/enviornment/port.go (88.9%)</option>
 				
 				<option value="file33">github.com/programmierigel/pwmanager/logger/New.go (84.6%)</option>
 				
@@ -1641,7 +1641,6 @@ func Path(defaultPath string, logger *logger.Logger) string <span class="cov8" t
 		<pre class="file" id="file32" style="display: none">package enviornment
 
 import (
-        "fmt"
         "os"
         "strconv"
 
@@ -1660,8 +1659,7 @@ func Port(defaultPort int, logger *logger.Logger) int <span class="cov8" title="
         if err != nil </span><span class="cov0" title="0">{
                 return defaultPort
         }</span>
-        <span class="cov8" title="1">fmt.Println(port)
-        logger.Printf("[INFO]-[Enviornment Vars] Server listen on env port %d", port)
+        <span class="cov8" title="1">logger.Printf("[INFO]-[Enviornment Vars] Server listen on env port %d", port)
         return port</span>
 }
 </pre>
