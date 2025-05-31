@@ -2,26 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"os"
-	"time"
 
 	"github.com/programmierigel/pwmanager/api"
 	"github.com/programmierigel/pwmanager/enviornment"
+	"github.com/programmierigel/pwmanager/logger"
 	"github.com/programmierigel/pwmanager/storage/inmemory"
 )
 
 func main() {
-	now := time.Now()
-	f, err := os.OpenFile(fmt.Sprintf("PWManagerServer - %d.%d.%d.logs", now.Day(), now.Month(), now.Year()),
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Println(err)
-	}
-	defer f.Close()
-	logger := log.New(f, "", log.LstdFlags)
 
+	logger := logger.New("")
 	port := enviornment.Port(3000, logger)
 
 	path := enviornment.Path(".", logger)
@@ -35,7 +26,7 @@ func main() {
 		Handler: router,
 	}
 
-	err = server.ListenAndServe()
+	err := server.ListenAndServe()
 	if err != nil {
 		logger.Panic(err)
 	}

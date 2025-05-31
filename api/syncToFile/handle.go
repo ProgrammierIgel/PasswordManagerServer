@@ -1,15 +1,15 @@
 package synctofile
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/programmierigel/pwmanager/logger"
 	"github.com/programmierigel/pwmanager/storage"
 	"github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle {
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		err := store.SyncToFile()
 

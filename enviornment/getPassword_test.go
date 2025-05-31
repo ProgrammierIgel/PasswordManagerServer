@@ -1,11 +1,11 @@
 package enviornment_test
 
 import (
-	"log"
 	"os"
 	"testing"
 
 	"github.com/programmierigel/pwmanager/enviornment"
+	"github.com/programmierigel/pwmanager/logger"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,14 +16,7 @@ func TestPath(t *testing.T) {
 
 		os.Setenv("LOCATION_PATH", password)
 
-		f, err := os.OpenFile("./test.log",
-			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			log.Println(err)
-		}
-
-		defer f.Close()
-		logger := log.New(f, "", log.LstdFlags)
+		logger := logger.New("./test.json")
 		passwordToCheck := enviornment.Path("", logger)
 
 		assert.Equal(t, password, passwordToCheck)
@@ -37,15 +30,7 @@ func TestPath(t *testing.T) {
 		path := "any path"
 
 		os.Unsetenv("LOCATION_PATH")
-
-		f, err := os.OpenFile("./test.log",
-			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			log.Println(err)
-		}
-
-		defer f.Close()
-		logger := log.New(f, "", log.LstdFlags)
+		logger := logger.New("./test.json")
 		pathToCheck := enviornment.Path(path, logger)
 
 		assert.Equal(t, path, pathToCheck)

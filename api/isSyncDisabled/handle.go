@@ -3,15 +3,15 @@ package issyncdisabled
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/programmierigel/pwmanager/logger"
 	"github.com/programmierigel/pwmanager/storage"
 	"github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle {
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle {
 	return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 		status := store.IsSyncDisabled()
 

@@ -7,12 +7,13 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"io"
-	"log"
+
+	"github.com/programmierigel/pwmanager/logger"
 )
 
 // Encrypt encrypts a plaintext string using a password
 // Returns base64-encoded encrypted string
-func Encrypt(plaintext, password string, logger *log.Logger) (string, error) {
+func Encrypt(plaintext, password string, logger *logger.Logger) (string, error) {
 	// Create a hash of the password to use as the AES key
 	key := sha256.Sum256([]byte(password))
 

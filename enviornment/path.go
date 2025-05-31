@@ -1,11 +1,12 @@
 package enviornment
 
 import (
-	"log"
 	"os"
+
+	"github.com/programmierigel/pwmanager/logger"
 )
 
-func Path(defaultPath string, logger *log.Logger) string {
+func Path(defaultPath string, logger *logger.Logger) string {
 	path := os.Getenv("LOCATION_PATH")
 
 	if path == "" {

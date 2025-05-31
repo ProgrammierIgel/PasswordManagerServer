@@ -1,11 +1,12 @@
 package enviornment
 
 import (
-	"log"
 	"os"
+
+	"github.com/programmierigel/pwmanager/logger"
 )
 
-func Password(defaultPassword string, logger *log.Logger) string {
+func Password(defaultPassword string, logger *logger.Logger) string {
 	password := os.Getenv("PASSWORD")
 
 	if password == "" {

@@ -2,12 +2,13 @@ package enviornment
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
+
+	"github.com/programmierigel/pwmanager/logger"
 )
 
-func Port(defaultPort int, logger *log.Logger) int {
+func Port(defaultPort int, logger *logger.Logger) int {
 	portAsString := os.Getenv("PORT")
 
 	if portAsString == "" {

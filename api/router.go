@@ -1,8 +1,6 @@
 package api
 
 import (
-	"log"
-
 	"github.com/julienschmidt/httprouter"
 	addnewaccount "github.com/programmierigel/pwmanager/api/addNewAccount"
 	addnewpassword "github.com/programmierigel/pwmanager/api/addNewPassword"
@@ -28,10 +26,11 @@ import (
 	"github.com/programmierigel/pwmanager/api/ping"
 	synctofile "github.com/programmierigel/pwmanager/api/syncToFile"
 	"github.com/programmierigel/pwmanager/api/syncfromfile"
+	"github.com/programmierigel/pwmanager/logger"
 	"github.com/programmierigel/pwmanager/storage"
 )
 
-func GetRouter(store storage.Store, logger *log.Logger) *httprouter.Router {
+func GetRouter(store storage.Store, logger *logger.Logger) *httprouter.Router {
 	router := httprouter.New()
 	// QUERYS
 	router.GET("/ping", ping.Handle())

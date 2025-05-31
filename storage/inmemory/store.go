@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"log"
 	"os"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/programmierigel/pwmanager/cryptography"
+	"github.com/programmierigel/pwmanager/logger"
 	"github.com/programmierigel/pwmanager/manager"
 	"github.com/programmierigel/pwmanager/tools"
 )
@@ -23,10 +23,10 @@ type Store struct {
 	password             string
 	token                map[string]manager.Token
 	remoteRequestAddress map[string]map[string]manager.RemoteRequestAddress
-	logger               *log.Logger
+	logger               *logger.Logger
 }
 
-func New(path string, password string, logger *log.Logger) *Store {
+func New(path string, password string, logger *logger.Logger) *Store {
 
 	store := &Store{
 		file:                 fmt.Sprintf("%s/secrets.json", path),
