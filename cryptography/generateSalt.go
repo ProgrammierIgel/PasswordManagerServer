@@ -4,15 +4,14 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-
-	"github.com/programmierigel/pwmanager/logger"
+	"log"
 )
 
 // GenerateSalt creates a cryptographically secure random string
 // suitable for use as a salt in password hashing or other security applications.
 // The length parameter specifies the number of random bytes to generate
 // before base64 encoding (final output will be longer).
-func GenerateSalt(length int) (string, error) {
+func GenerateSalt(length int, logger *log.Logger) (string, error) {
 	// Allocate a byte slice to store the random bytes
 	randomBytes := make([]byte, length)
 
@@ -20,7 +19,7 @@ func GenerateSalt(length int) (string, error) {
 	// This is a secure random number generator suitable for cryptographic use
 	_, err := rand.Read(randomBytes)
 	if err != nil {
-		logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] Failed to generate random bytes: %s", err.Error()))
+		logger.Printf("[CRITICAL]-[CRYPTOGRPHY] Failed to generate random bytes: %s", err.Error())
 		return "", fmt.Errorf("failed to generate random bytes: %w", err)
 	}
 

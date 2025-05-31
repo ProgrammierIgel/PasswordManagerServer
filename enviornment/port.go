@@ -2,17 +2,16 @@ package enviornment
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
-
-	"github.com/programmierigel/pwmanager/logger"
 )
 
-func Port(defaultPort int) int {
+func Port(defaultPort int, logger *log.Logger) int {
 	portAsString := os.Getenv("PORT")
 
 	if portAsString == "" {
-		logger.Info(fmt.Sprintf("[Enviornment Vars] Server listen on default port %d", defaultPort))
+		logger.Printf("[INFO]-[Enviornment Vars] Server listen on default port %d", defaultPort)
 		return defaultPort
 	}
 
@@ -21,6 +20,6 @@ func Port(defaultPort int) int {
 		return defaultPort
 	}
 	fmt.Println(port)
-	logger.Info(fmt.Sprintf("[Enviornment Vars] Server listen on env port %d", port))
+	logger.Printf("[INFO]-[Enviornment Vars] Server listen on env port %d", port)
 	return port
 }

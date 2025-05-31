@@ -1,0 +1,6 @@
+2025/05/31 20:35:57 [INFO]-[Enviornment Vars] Path is set to env path: 'any password'
+2025/05/31 20:35:57 [INFO]-[Enviornment Vars] Path is set to default path: 'any path'
+2025/05/31 20:35:57 [CRITICAL]-[Enviornment Vars] Using env password
+2025/05/31 20:35:57 [INFO]-[Enviornment Vars] Using default password
+2025/05/31 20:35:57 [INFO]-[Enviornment Vars] Server listen on env port 1234
+2025/05/31 20:35:57 [INFO]-[Enviornment Vars] Server listen on default port 1234

@@ -1,6 +1,7 @@
 package enviornment_test
 
 import (
+	"log"
 	"os"
 	"testing"
 
@@ -15,11 +16,20 @@ func TestPassword(t *testing.T) {
 
 		os.Setenv("PASSWORD", password)
 
-		passwordToCheck := enviornment.Password("")
+		f, err := os.OpenFile("./test.log",
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		passwordToCheck := enviornment.Password("", logger)
 
 		assert.Equal(t, password, passwordToCheck)
 
 		os.Setenv("PASSWORD", oldPassword)
+		os.Remove("./test.log")
 	})
 
 	t.Run("Returns the default password", func(t *testing.T) {
@@ -27,11 +37,19 @@ func TestPassword(t *testing.T) {
 		password := "any password"
 
 		os.Unsetenv("PASSWORD")
+		f, err := os.OpenFile("./test.log",
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
 
-		passwordToCheck := enviornment.Password(password)
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		passwordToCheck := enviornment.Password(password, logger)
 
 		assert.Equal(t, password, passwordToCheck)
 
 		os.Setenv("PASSWORD", oldPassword)
+		os.Remove("./test.log")
 	})
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -11,12 +12,12 @@ import (
 	"github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle {
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle {
 	return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 		response.Header().Set("Access-Control-Allow-Origin", "*")
 		requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
 		if err != nil {
-			tools.WarningLog("Attempt to create a account. Cant read request.", err, request)
+			tools.WarningLog("Attempt to create a account. Cant read request.", err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -24,7 +25,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		var requestBody RequestBody
 		err = json.Unmarshal(requestBytes, &requestBody)
 		if err != nil {
-			tools.WarningLog("Attempt to create a account. Cant unmarshal request.", err, request)
+			tools.WarningLog("Attempt to create a account. Cant unmarshal request.", err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -32,7 +33,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		err = store.AddNewAccount(requestBody.AccountName, requestBody.Password)
 
 		if err != nil {
-			tools.WarningLog("Attempt to create a account. Cant create new account.", err, request)
+			tools.WarningLog("Attempt to create a account. Cant create new account.", err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -40,7 +41,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		response.Header().Set("Content-Type", "text/plain")
 		response.WriteHeader(http.StatusOK)
 		response.Header().Set("ok", "true")
-		tools.DebugLog(fmt.Sprintf("Created new account ('%s').", requestBody.AccountName), request)
+		tools.DebugLog(fmt.Sprintf("Created new account ('%s').", requestBody.AccountName), request, logger)
 		response.Write([]byte(http.StatusText(http.StatusOK)))
 	}
 }

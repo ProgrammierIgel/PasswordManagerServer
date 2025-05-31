@@ -1,6 +1,8 @@
 package api
 
 import (
+	"log"
+
 	"github.com/julienschmidt/httprouter"
 	addnewaccount "github.com/programmierigel/pwmanager/api/addNewAccount"
 	addnewpassword "github.com/programmierigel/pwmanager/api/addNewPassword"
@@ -29,34 +31,34 @@ import (
 	"github.com/programmierigel/pwmanager/storage"
 )
 
-func GetRouter(store storage.Store) *httprouter.Router {
+func GetRouter(store storage.Store, logger *log.Logger) *httprouter.Router {
 	router := httprouter.New()
 	// QUERYS
 	router.GET("/ping", ping.Handle())
 	// COMMANDS
-	router.POST("/addNewAccount", addnewaccount.Handle(store))
-	router.POST("/deleteAccount", deleteaccount.Handle(store))
-	router.POST("/addNewPassword", addnewpassword.Handle(store))
-	router.POST("/checkPassword", checkpassword.Handle(store))
-	router.POST("/deletePassword", deletepassword.Handle(store))
-	router.POST("/system/disableSync", disablesync.Handle(store))
-	router.POST("/system/enableSync", enablesync.Handle(store))
-	router.POST("/getAllPasswordsOfAccount", getallpasswordsofaccount.Handle(store))
-	router.POST("/getPassword", getpassword.Handle(store))
-	router.POST("/getUsername", getusername.Handle(store))
-	router.POST("/getUrl", geturl.Handle(store))
-	router.POST("/changePasswordName", changepasswordname.Handle(store))
-	router.POST("/changeUrl", changepasswordname.Handle(store))
-	router.POST("/changeSecret", changesecret.Handle(store))
-	router.POST("/changeUsername", changeusername.Handle(store))
-	router.GET("/system/syncFromFile", syncfromfile.Handle(store))
-	router.GET("/system/syncToFile", synctofile.Handle(store))
-	router.GET("/system/isSyncDisabled", issyncdisabled.Handle(store))
-	router.POST("/system/devalueAllToken", devaluealltoken.Handle(store))
-	router.POST("/devalueAllTokenOfAccount", devaluealltokenofaccount.Handle(store))
-	router.POST("/createToken", createtoken.Handle(store))
-	router.POST("/devalueToken", devaluetoken.Handle(store))
-	router.POST("/checkToken", checktoken.Handle(store))
-	router.POST("/getNumberOfAllRegisteredTokens", getnumberofallregisteredtokens.Handle(store))
+	router.POST("/addNewAccount", addnewaccount.Handle(store, logger))
+	router.POST("/deleteAccount", deleteaccount.Handle(store, logger))
+	router.POST("/addNewPassword", addnewpassword.Handle(store, logger))
+	router.POST("/checkPassword", checkpassword.Handle(store, logger))
+	router.POST("/deletePassword", deletepassword.Handle(store, logger))
+	router.POST("/system/disableSync", disablesync.Handle(store, logger))
+	router.POST("/system/enableSync", enablesync.Handle(store, logger))
+	router.POST("/getAllPasswordsOfAccount", getallpasswordsofaccount.Handle(store, logger))
+	router.POST("/getPassword", getpassword.Handle(store, logger))
+	router.POST("/getUsername", getusername.Handle(store, logger))
+	router.POST("/getUrl", geturl.Handle(store, logger))
+	router.POST("/changePasswordName", changepasswordname.Handle(store, logger))
+	router.POST("/changeUrl", changepasswordname.Handle(store, logger))
+	router.POST("/changeSecret", changesecret.Handle(store, logger))
+	router.POST("/changeUsername", changeusername.Handle(store, logger))
+	router.GET("/system/syncFromFile", syncfromfile.Handle(store, logger))
+	router.GET("/system/syncToFile", synctofile.Handle(store, logger))
+	router.GET("/system/isSyncDisabled", issyncdisabled.Handle(store, logger))
+	router.POST("/system/devalueAllToken", devaluealltoken.Handle(store, logger))
+	router.POST("/devalueAllTokenOfAccount", devaluealltokenofaccount.Handle(store, logger))
+	router.POST("/createToken", createtoken.Handle(store, logger))
+	router.POST("/devalueToken", devaluetoken.Handle(store, logger))
+	router.POST("/checkToken", checktoken.Handle(store, logger))
+	router.POST("/getNumberOfAllRegisteredTokens", getnumberofallregisteredtokens.Handle(store, logger))
 	return router
 }

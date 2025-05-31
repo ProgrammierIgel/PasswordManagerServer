@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -11,12 +12,12 @@ import (
 	"github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle {
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle {
 	return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 		response.Header().Set("Access-Control-Allow-Origin", "*")
 		requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
 		if err != nil {
-			tools.WarningLog("Attempt to get a password. Cant read request.", err, request)
+			tools.WarningLog("Attempt to get a password. Cant read request.", err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -24,7 +25,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		var requestBody RequestBody
 		err = json.Unmarshal(requestBytes, &requestBody)
 		if err != nil {
-			tools.WarningLog("Attempt get password. Cant unmarshal request.", err, request)
+			tools.WarningLog("Attempt get password. Cant unmarshal request.", err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -32,7 +33,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		password, err := store.GetPassword(requestBody.Token, requestBody.PasswordName)
 
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant get password.", requestBody.PasswordName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant get password.", requestBody.PasswordName), err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -43,14 +44,14 @@ func Handle(store storage.Store) httprouter.Handle {
 
 		responseBytes, err := json.Marshal(responseBody)
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant marshal password struct.", requestBody.PasswordName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant marshal password struct.", requestBody.PasswordName), err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
-		tools.DebugLog(fmt.Sprintf("Getted password (%s)", requestBody.PasswordName), request)
+		tools.DebugLog(fmt.Sprintf("Getted password (%s)", requestBody.PasswordName), request, logger)
 		response.Write(responseBytes)
 	}
 }

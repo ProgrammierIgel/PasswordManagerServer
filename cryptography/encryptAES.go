@@ -6,36 +6,34 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
-	"fmt"
 	"io"
-
-	"github.com/programmierigel/pwmanager/logger"
+	"log"
 )
 
 // Encrypt encrypts a plaintext string using a password
 // Returns base64-encoded encrypted string
-func Encrypt(plaintext, password string) (string, error) {
+func Encrypt(plaintext, password string, logger *log.Logger) (string, error) {
 	// Create a hash of the password to use as the AES key
 	key := sha256.Sum256([]byte(password))
 
 	// Create AES cipher
 	block, err := aes.NewCipher(key[:])
 	if err != nil {
-		logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] EncryptionAES: %s", err.Error()))
+		logger.Printf("[CRITICAL]-[CRYPTOGRPHY] EncryptionAES: %s", err.Error())
 		return "", err
 	}
 
 	// Create a new GCM mode
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] EncryptionAES: %s", err.Error()))
+		logger.Printf("[CRITICAL]-[CRYPTOGRPHY] EncryptionAES: %s", err.Error())
 		return "", err
 	}
 
 	// Generate a nonce (Number used ONCE)
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] EncryptionAES: %s", err.Error()))
+		logger.Printf("[CRITICAL]-[CRYPTOGRPHY] EncryptionAES: %s", err.Error())
 		return "", err
 	}
 

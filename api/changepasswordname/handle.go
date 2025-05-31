@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -11,12 +12,12 @@ import (
 	"github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle {
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle {
 	return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 		response.Header().Set("Access-Control-Allow-Origin", "*")
 		requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
 		if err != nil {
-			tools.WarningLog("Attempt to change URL. Cant read request.", err, request)
+			tools.WarningLog("Attempt to change URL. Cant read request.", err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -24,7 +25,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		var requestBody RequestBody
 		err = json.Unmarshal(requestBytes, &requestBody)
 		if err != nil {
-			tools.WarningLog("Attempt change URL. Cant unmarshal request.", err, request)
+			tools.WarningLog("Attempt change URL. Cant unmarshal request.", err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -32,14 +33,14 @@ func Handle(store storage.Store) httprouter.Handle {
 		err = store.ChangePasswordName(requestBody.Token, requestBody.PasswordName, requestBody.NewPasswordName)
 
 		if err != nil {
-			tools.WarningLog(fmt.Sprintf("Attempt to change URL (%s). Cant add password.", requestBody.PasswordName), err, request)
+			tools.WarningLog(fmt.Sprintf("Attempt to change URL (%s). Cant add password.", requestBody.PasswordName), err, request, logger)
 			http.Error(response, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
-		tools.DebugLog(fmt.Sprintf("Changed URL (%s)", requestBody.PasswordName), request)
+		tools.DebugLog(fmt.Sprintf("Changed URL (%s)", requestBody.PasswordName), request, logger)
 		response.Write([]byte(http.StatusText(http.StatusOK)))
 	}
 }

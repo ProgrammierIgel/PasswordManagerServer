@@ -2,6 +2,7 @@ package inmemory_test
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"testing"
 
@@ -13,10 +14,20 @@ func TestNew(t *testing.T) {
 	t.Run("Assert its not nil.", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "123")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		assert.NotNil(t, store)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 
@@ -24,29 +35,49 @@ func TestAddNewAccount(t *testing.T) {
 	t.Run("Creates an account in system", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store1 := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store1 := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
-		err := store1.AddNewAccount(accountName, accountPassword)
+		err = store1.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store1.CreateToken(accountName, accountPassword, "")
 
 		assert.Nil(t, err)
 		assert.NotNil(t, token)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 
 	t.Run("throws an error if account already exists", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "123")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 
 		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Error(t, err, "account already exists")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 
@@ -54,10 +85,19 @@ func TestDeleteAccount(t *testing.T) {
 	t.Run("throws an error due create a new token on remove account", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 
 		token, err := store.CreateToken(accountName, accountPassword, "")
@@ -68,30 +108,49 @@ func TestDeleteAccount(t *testing.T) {
 		err = store.CheckPassword(accountName, accountPassword, "")
 		assert.Error(t, err, "unknown password")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 
 	t.Run("throws an error if token is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token := "incorrect token"
 		err = store.DeleteAccount(accountName, token)
 		assert.Error(t, err, "incorrect token")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 
 	t.Run("throws an error due delete other account", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 
 		token, err := store.CreateToken(accountName, accountPassword, "")
@@ -100,6 +159,7 @@ func TestDeleteAccount(t *testing.T) {
 		err = store.DeleteAccount("other account", token)
 		assert.Error(t, err, "cant delete other account")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 }
@@ -108,12 +168,21 @@ func TestAddNewPassword(t *testing.T) {
 	t.Run("Creates a new password", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
 		passwordToAdd := "secondExamplePassword"
 		passwordName := "examplePasswordname"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -123,18 +192,28 @@ func TestAddNewPassword(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, passwordToAdd, password)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 
 	t.Run("Throws an error if account already exists", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
 		passwordToAdd := "secondExamplePassword"
 		passwordName := "examplePasswordname"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -143,23 +222,34 @@ func TestAddNewPassword(t *testing.T) {
 		err = store.AddNewPassword(token, passwordName, passwordToAdd, "https://www.google.com", "exampeUsername")
 		assert.Error(t, err, "already exists")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 
 	t.Run("Throws an error if token incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
 		passwordToAdd := "secondExamplePassword"
 		passwordName := "examplePasswordname"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token := "incorrect token"
 		assert.Nil(t, err)
 		err = store.AddNewPassword(token, passwordName, passwordToAdd, "https://www.google.com", "exampeUsername")
 		assert.Error(t, err, "incorrect token")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 }
@@ -168,12 +258,21 @@ func TestDeletePassword(t *testing.T) {
 	t.Run("Check if account after deleting doesn't exists", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
 		passwordToAdd := "secondExamplePassword"
 		passwordName := "examplePasswordname"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -185,17 +284,27 @@ func TestDeletePassword(t *testing.T) {
 		assert.Equal(t, password, "")
 		assert.Error(t, err, "password on account not found")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("throws in error if password is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
 		passwordToAdd := "secondExamplePassword"
 		passwordName := "examplePasswordname"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -205,22 +314,33 @@ func TestDeletePassword(t *testing.T) {
 		err = store.DeletePassword(token, passwordName)
 		assert.Error(t, err, "incorrect token")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 
 	t.Run("Throws an error if to deleting account doesn't exists", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName := "exampleAccount"
 		accountPassword := "examplePassword"
 		passwordName := "examplePasswordname"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
 		err = store.DeletePassword(token, passwordName)
 		assert.Error(t, err, "passwordname does not exist")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 }
@@ -230,9 +350,17 @@ func TestGetPassword(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
 
-		store := inmemory.New(path, "")
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -243,14 +371,23 @@ func TestGetPassword(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, gettedPassword, pasword)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Returns an error if the token is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
 
-		store := inmemory.New(path, "")
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -262,14 +399,24 @@ func TestGetPassword(t *testing.T) {
 		assert.Error(t, err, "incorrect token")
 		assert.Equal(t, gettedPassword, "")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Returns an error if the getted password doesn't exists", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -281,6 +428,7 @@ func TestGetPassword(t *testing.T) {
 		assert.Error(t, err, "password on account not found")
 		assert.Equal(t, gettedPassword, "")
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 }
@@ -289,9 +437,18 @@ func TestGetURL(t *testing.T) {
 	t.Run("Outputs the URL if token and passwordname are correct.", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -302,13 +459,23 @@ func TestGetURL(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, passwordURL, gettedURL)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Throws an error if token is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -321,13 +488,23 @@ func TestGetURL(t *testing.T) {
 		assert.Equal(t, gettedURL, "")
 		assert.NotEqual(t, gettedURL, passwordURL)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Throws an error if password doesn't exists.", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -339,15 +516,25 @@ func TestGetURL(t *testing.T) {
 		assert.Equal(t, gettedURL, "")
 		assert.NotEqual(t, gettedURL, passwordURL)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 func TestGetUsername(t *testing.T) {
 	t.Run("Returns the Username if token and passwordname are correct", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -358,14 +545,24 @@ func TestGetUsername(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, gettedUsername, username)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("Throws an error if token is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -379,14 +576,24 @@ func TestGetUsername(t *testing.T) {
 		assert.NotEqual(t, gettedUsername, username)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 
 	t.Run("Throws an error if passwordname isnt registered", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -399,6 +606,7 @@ func TestGetUsername(t *testing.T) {
 		assert.Equal(t, gettedUsername, "")
 		assert.NotEqual(t, gettedUsername, username)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 
@@ -406,9 +614,18 @@ func TestGetAllPasswordNamesOfAccount(t *testing.T) {
 	t.Run("Returns all registered passwordnames on account", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -441,13 +658,23 @@ func TestGetAllPasswordNamesOfAccount(t *testing.T) {
 		}
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Throws an error if token is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -460,13 +687,23 @@ func TestGetAllPasswordNamesOfAccount(t *testing.T) {
 		assert.Empty(t, gettedPasswordNames)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Returns a empty list if no account is registered", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -475,6 +712,7 @@ func TestGetAllPasswordNamesOfAccount(t *testing.T) {
 		assert.Empty(t, gettedPasswordNames)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 
 }
@@ -484,7 +722,16 @@ func TestDisableSync(t *testing.T) {
 		path := "."
 		storePassword := "anyPassword"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, storePassword)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, storePassword, logger)
 
 		status, err := store.DisableSync(storePassword)
 		assert.Nil(t, err)
@@ -492,28 +739,49 @@ func TestDisableSync(t *testing.T) {
 		status = store.IsSyncDisabled()
 		assert.True(t, status)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("Throws an error if store password is incorrect", func(t *testing.T) {
 		path := "."
 		storePassword := "anyPassword"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, storePassword)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, storePassword, logger)
+
 		status := store.IsSyncDisabled()
 		assert.False(t, status)
 
 		wrongPassword := "any wrong password"
-		status, err := store.DisableSync(wrongPassword)
+		status, err = store.DisableSync(wrongPassword)
 		assert.False(t, status)
 		assert.Error(t, err, "wrong password")
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Returns true if sync is disabled", func(t *testing.T) {
 		path := "."
 		password := "any password"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		status, err := store.DisableSync(password)
 		assert.True(t, status)
@@ -521,7 +789,7 @@ func TestDisableSync(t *testing.T) {
 		status, err = store.DisableSync(password)
 		assert.True(t, status)
 		assert.Nil(t, err)
-
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 func TestIsSyncDisabled(t *testing.T) {
@@ -529,7 +797,16 @@ func TestIsSyncDisabled(t *testing.T) {
 		path := "."
 		password := "any password"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		status, err := store.DisableSync(password)
 		assert.Nil(t, err)
@@ -539,12 +816,22 @@ func TestIsSyncDisabled(t *testing.T) {
 		assert.Nil(t, err)
 		assert.True(t, status)
 		assert.Equal(t, gettedStatus, status)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Check if sync is enabled after activation", func(t *testing.T) {
 		path := "."
 		password := "any password"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		status, err := store.EnableSync(password)
 		assert.Nil(t, err)
@@ -554,15 +841,26 @@ func TestIsSyncDisabled(t *testing.T) {
 		assert.Nil(t, err)
 		assert.False(t, status)
 		assert.Equal(t, gettedStatus, status)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Returns that sync is enabled after initalizing from store", func(t *testing.T) {
 		path := "."
 		password := "any password"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		status := store.IsSyncDisabled()
 		assert.False(t, status)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 func TestEnableSync(t *testing.T) {
@@ -570,7 +868,16 @@ func TestEnableSync(t *testing.T) {
 		path := "."
 		password := "any password"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		status, err := store.DisableSync(password)
 		assert.Nil(t, err)
@@ -585,13 +892,22 @@ func TestEnableSync(t *testing.T) {
 		status, err = store.EnableSync(password)
 		assert.Nil(t, err)
 		assert.False(t, status)
-
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("activates the sync if its deactivated", func(t *testing.T) {
 		path := "."
 		password := "any password"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		status, err := store.DisableSync(password)
 		assert.Nil(t, err)
@@ -603,13 +919,23 @@ func TestEnableSync(t *testing.T) {
 		status, err = store.EnableSync(password)
 		assert.Nil(t, err)
 		assert.False(t, status)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("returns an error if password is incorrect", func(t *testing.T) {
 		path := "."
 		password := "any password"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		incorrectPassword := "any incorrect password"
 
@@ -626,22 +952,33 @@ func TestEnableSync(t *testing.T) {
 
 		status = store.IsSyncDisabled()
 		assert.True(t, status)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Let the syncronization active if its triggered after initalizing", func(t *testing.T) {
 		path := "."
 		password := "any password"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		status := store.IsSyncDisabled()
 		assert.False(t, status)
 
-		status, err := store.EnableSync(password)
+		status, err = store.EnableSync(password)
 		assert.Nil(t, err)
 		assert.False(t, status)
 
 		status = store.IsSyncDisabled()
 		assert.False(t, status)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 
@@ -649,9 +986,19 @@ func TestChangeUsername(t *testing.T) {
 	t.Run("Changes the username if token and passwordname are correct", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
+
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -671,13 +1018,24 @@ func TestChangeUsername(t *testing.T) {
 		assert.Nil(t, err)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Throws an error if token is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
+
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -697,14 +1055,25 @@ func TestChangeUsername(t *testing.T) {
 		assert.Equal(t, gettedUsername, username)
 		assert.Nil(t, err)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("Throws an error if passwordname is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
+
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -724,6 +1093,7 @@ func TestChangeUsername(t *testing.T) {
 		assert.Equal(t, gettedUsername, username)
 		assert.Nil(t, err)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 }
@@ -731,9 +1101,19 @@ func TestChangeURL(t *testing.T) {
 	t.Run("changes the url if token and passwordname are correct", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
+
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -751,14 +1131,25 @@ func TestChangeURL(t *testing.T) {
 		assert.Equal(t, gettedURL, newURL)
 		assert.NotEqual(t, gettedURL, URL)
 		assert.Nil(t, err)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("Throws an error if passwordname is undefined", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
+
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -777,13 +1168,24 @@ func TestChangeURL(t *testing.T) {
 		assert.NotEqual(t, gettedURL, newURL)
 		assert.Equal(t, gettedURL, URL)
 		assert.Nil(t, err)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Throws an error if token is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
+
 		accountName, accountPassword := "any AccountName", "any Password"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -802,6 +1204,7 @@ func TestChangeURL(t *testing.T) {
 		assert.NotEqual(t, gettedURL, newURL)
 		assert.Equal(t, gettedURL, URL)
 		assert.Nil(t, err)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 
@@ -810,9 +1213,18 @@ func TestChangePassword(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
 
-		store := inmemory.New(path, "")
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
+
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -834,14 +1246,24 @@ func TestChangePassword(t *testing.T) {
 		assert.NotEqual(t, gettedPassword, pasword)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("returns an error if the passwordname is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
 
-		store := inmemory.New(path, "")
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
+
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -862,15 +1284,25 @@ func TestChangePassword(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotEqual(t, gettedPassword, newPassword)
 		assert.Equal(t, gettedPassword, pasword)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("Throws an error if token is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
 
-		store := inmemory.New(path, "")
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
+
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -891,6 +1323,7 @@ func TestChangePassword(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotEqual(t, gettedPassword, newPassword)
 		assert.Equal(t, gettedPassword, pasword)
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 
@@ -928,10 +1361,19 @@ func TestCreateToken(t *testing.T) {
 	t.Run("Returns a token if accountname and password are correct", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -941,15 +1383,25 @@ func TestCreateToken(t *testing.T) {
 		assert.True(t, correct)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("Throws an error if password is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "unknown password")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		incorrectPassword := "incorrectPassword"
 		token, err := store.CreateToken(accountName, incorrectPassword, "")
@@ -959,15 +1411,25 @@ func TestCreateToken(t *testing.T) {
 		correct := store.CheckToken(token)
 		assert.False(t, correct)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("Throws an error if account does not exits", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		unknownAccountname := "unknownAccountname"
 		token, err := store.CreateToken(unknownAccountname, accountPassword, "")
@@ -977,14 +1439,24 @@ func TestCreateToken(t *testing.T) {
 		correct := store.CheckToken(token)
 		assert.False(t, correct)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Returns never one token twice", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token1, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -1000,15 +1472,25 @@ func TestCreateToken(t *testing.T) {
 
 		assert.NotEqual(t, token1, token2)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Returns never one token twice on 2 accounts", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName1, accountPassword1 := "anyAccountName1", "anyPassword1"
 		accountName2, accountPassword2 := "anyAccountName2", "anyPassword2"
-		err := store.AddNewAccount(accountName1, accountPassword1)
+		err = store.AddNewAccount(accountName1, accountPassword1)
 		assert.Nil(t, err)
 		err = store.AddNewAccount(accountName2, accountPassword2)
 		assert.Nil(t, err)
@@ -1026,6 +1508,7 @@ func TestCreateToken(t *testing.T) {
 
 		assert.NotEqual(t, token1, token2)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 
@@ -1033,10 +1516,19 @@ func TestCheckToken(t *testing.T) {
 	t.Run("Returns true if token is valid", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -1045,24 +1537,44 @@ func TestCheckToken(t *testing.T) {
 		assert.True(t, correct)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Returns false if token is invalid", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		invalidToken := "invalidToken"
 		valid := store.CheckToken(invalidToken)
 		assert.False(t, valid)
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Returns false if token is devalued", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -1075,15 +1587,25 @@ func TestCheckToken(t *testing.T) {
 		assert.False(t, correct)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	t.Run("Returns false if all tokens of account are devalued", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -1097,15 +1619,25 @@ func TestCheckToken(t *testing.T) {
 		assert.False(t, correct)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("returns false if all tokens are devalued", func(t *testing.T) {
 		path := "."
 		password := "anyPassword"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -1119,16 +1651,26 @@ func TestCheckToken(t *testing.T) {
 		assert.False(t, correct)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 
 	// Test fails because test needs to much time
 	/*t.Run("Returns false if the time of the token is up", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -1149,10 +1691,19 @@ func TestDevalueToken(t *testing.T) {
 	t.Run("Token is devalued", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 		token, err := store.CreateToken(accountName, accountPassword, "")
 		assert.Nil(t, err)
@@ -1166,14 +1717,24 @@ func TestDevalueToken(t *testing.T) {
 		assert.False(t, correct)
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Do nothing if token is incorrect", func(t *testing.T) {
 		path := "."
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, "")
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, "", logger)
 
 		accountName, accountPassword := "anyAccountName", "anyPassword"
-		err := store.AddNewAccount(accountName, accountPassword)
+		err = store.AddNewAccount(accountName, accountPassword)
 		assert.Nil(t, err)
 
 		token := "invalid token"
@@ -1181,6 +1742,7 @@ func TestDevalueToken(t *testing.T) {
 		assert.False(t, store.CheckToken(token))
 
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 
@@ -1189,10 +1751,19 @@ func TestDevalueAllTokens(t *testing.T) {
 		path := "."
 		password := "anyPassword"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		accountName1, accountPassword1 := "anyAccountName1", "anyPassword1"
-		err := store.AddNewAccount(accountName1, accountPassword1)
+		err = store.AddNewAccount(accountName1, accountPassword1)
 		assert.Nil(t, err)
 		token1, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
@@ -1219,16 +1790,25 @@ func TestDevalueAllTokens(t *testing.T) {
 		assert.False(t, correct)
 		correct = store.CheckToken(token3)
 		assert.False(t, correct)
-
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 	t.Run("Throws an error if password is incorrect", func(t *testing.T) {
 		path := "."
 		password := "anyPassword"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		accountName1, accountPassword1 := "anyAccountName1", "anyPassword1"
-		err := store.AddNewAccount(accountName1, accountPassword1)
+		err = store.AddNewAccount(accountName1, accountPassword1)
 		assert.Nil(t, err)
 		token1, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
@@ -1258,7 +1838,7 @@ func TestDevalueAllTokens(t *testing.T) {
 		assert.True(t, correct)
 		correct = store.CheckToken(token3)
 		assert.True(t, correct)
-
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
 }
 
@@ -1267,11 +1847,20 @@ func TestDevalueAllTokensOfAccount(t *testing.T) {
 		path := "."
 		password := "anyPassword"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		accountName1, accountPassword1 := "anyAccountName1", "anyPassword1"
 		accountName2, accountPassword2 := "anyAccountName2", "anyPassword2"
-		err := store.AddNewAccount(accountName1, accountPassword1)
+		err = store.AddNewAccount(accountName1, accountPassword1)
 		assert.Nil(t, err)
 		token1, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
@@ -1299,17 +1888,27 @@ func TestDevalueAllTokensOfAccount(t *testing.T) {
 		assert.False(t, store.CheckToken(token2))
 		assert.False(t, store.CheckToken(token3))
 		assert.True(t, store.CheckToken(token4))
-
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 	})
+
 	t.Run("Devalues no token if token is incorret", func(t *testing.T) {
 		path := "."
 		password := "anyPassword"
 		os.Remove(fmt.Sprintf("%s/secrets.json", path))
-		store := inmemory.New(path, password)
+
+		f, err := os.OpenFile(fmt.Sprintf("%s/test.log", path),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer f.Close()
+		logger := log.New(f, "", log.LstdFlags)
+		store := inmemory.New(path, password, logger)
 
 		accountName1, accountPassword1 := "anyAccountName1", "anyPassword1"
 		accountName2, accountPassword2 := "anyAccountName2", "anyPassword2"
-		err := store.AddNewAccount(accountName1, accountPassword1)
+		err = store.AddNewAccount(accountName1, accountPassword1)
 		assert.Nil(t, err)
 		token1, err := store.CreateToken(accountName1, accountPassword1, "")
 		assert.Nil(t, err)
@@ -1337,6 +1936,8 @@ func TestDevalueAllTokensOfAccount(t *testing.T) {
 		assert.True(t, store.CheckToken(token2))
 		assert.True(t, store.CheckToken(token3))
 		assert.True(t, store.CheckToken(token4))
+
+		os.Remove(fmt.Sprintf("%s/test.log", path))
 
 	})
 	// t.Run("", func(t *testing.T) {

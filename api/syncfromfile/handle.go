@@ -1,6 +1,7 @@
 package syncfromfile
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -8,12 +9,12 @@ import (
 	"github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle {
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		err := store.SyncFromFile()
 
 		if err != nil {
-			tools.WarningLog("Attempt sync cached store from file.", err, r)
+			tools.WarningLog("Attempt sync cached store from file.", err, r, logger)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
