@@ -121,43 +121,27 @@
 				
 				<option value="file32">github.com/programmierigel/pwmanager/enviornment/port.go (90.0%)</option>
 				
-				<option value="file33">github.com/programmierigel/pwmanager/logger/critical.go (100.0%)</option>
+				<option value="file33">github.com/programmierigel/pwmanager/main.go (0.0%)</option>
 				
-				<option value="file34">github.com/programmierigel/pwmanager/logger/debug.go (0.0%)</option>
+				<option value="file34">github.com/programmierigel/pwmanager/storage/inmemory/store.go (75.3%)</option>
 				
-				<option value="file35">github.com/programmierigel/pwmanager/logger/getLogLevel.go (83.3%)</option>
+				<option value="file35">github.com/programmierigel/pwmanager/tools/debugLog.go (0.0%)</option>
 				
-				<option value="file36">github.com/programmierigel/pwmanager/logger/info.go (80.0%)</option>
+				<option value="file36">github.com/programmierigel/pwmanager/tools/isElementInMap.go (100.0%)</option>
 				
-				<option value="file37">github.com/programmierigel/pwmanager/logger/isElementInSlice.go (75.0%)</option>
+				<option value="file37">github.com/programmierigel/pwmanager/tools/isElementInSlice.go (0.0%)</option>
 				
-				<option value="file38">github.com/programmierigel/pwmanager/logger/terminalColor/isElementInSlice.go (75.0%)</option>
+				<option value="file38">github.com/programmierigel/pwmanager/tools/isIdInMap.go (100.0%)</option>
 				
-				<option value="file39">github.com/programmierigel/pwmanager/logger/terminalColor/setColor.go (75.0%)</option>
+				<option value="file39">github.com/programmierigel/pwmanager/tools/removeMapFromMap.go (50.0%)</option>
 				
-				<option value="file40">github.com/programmierigel/pwmanager/logger/warning.go (80.0%)</option>
+				<option value="file40">github.com/programmierigel/pwmanager/tools/removePasswordFromMap.go (83.3%)</option>
 				
-				<option value="file41">github.com/programmierigel/pwmanager/main.go (0.0%)</option>
+				<option value="file41">github.com/programmierigel/pwmanager/tools/removeStringFromMap.go (83.3%)</option>
 				
-				<option value="file42">github.com/programmierigel/pwmanager/storage/inmemory/store.go (75.3%)</option>
+				<option value="file42">github.com/programmierigel/pwmanager/tools/removeTokenFromMap.go (83.3%)</option>
 				
-				<option value="file43">github.com/programmierigel/pwmanager/tools/debugLog.go (0.0%)</option>
-				
-				<option value="file44">github.com/programmierigel/pwmanager/tools/isElementInMap.go (100.0%)</option>
-				
-				<option value="file45">github.com/programmierigel/pwmanager/tools/isElementInSlice.go (0.0%)</option>
-				
-				<option value="file46">github.com/programmierigel/pwmanager/tools/isIdInMap.go (100.0%)</option>
-				
-				<option value="file47">github.com/programmierigel/pwmanager/tools/removeMapFromMap.go (50.0%)</option>
-				
-				<option value="file48">github.com/programmierigel/pwmanager/tools/removePasswordFromMap.go (83.3%)</option>
-				
-				<option value="file49">github.com/programmierigel/pwmanager/tools/removeStringFromMap.go (83.3%)</option>
-				
-				<option value="file50">github.com/programmierigel/pwmanager/tools/removeTokenFromMap.go (83.3%)</option>
-				
-				<option value="file51">github.com/programmierigel/pwmanager/tools/warningLog.go (0.0%)</option>
+				<option value="file43">github.com/programmierigel/pwmanager/tools/warningLog.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -177,6 +161,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -184,12 +169,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to create a account. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to create a account. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -197,7 +182,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to create a account. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt to create a account. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -205,7 +190,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.AddNewAccount(requestBody.AccountName, requestBody.Password)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to create a account. Cant create new account.", err, request)
+                        tools.WarningLog("Attempt to create a account. Cant create new account.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -213,7 +198,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "text/plain")
                 response.WriteHeader(http.StatusOK)
                 response.Header().Set("ok", "true")
-                tools.DebugLog(fmt.Sprintf("Created new account ('%s').", requestBody.AccountName), request)
+                tools.DebugLog(fmt.Sprintf("Created new account ('%s').", requestBody.AccountName), request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -225,6 +210,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -232,12 +218,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to add new password. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to add new password. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -245,7 +231,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt add new password. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt add new password. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -253,14 +239,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.AddNewPassword(requestBody.Token, requestBody.PasswordName, requestBody.Password.Password, requestBody.Password.URL, requestBody.Password.Username)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to add new password (%s) on account. Cant add password.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to add new password (%s) on account. Cant add password.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Added new password (%s) to account", requestBody.PasswordName), request)
+                tools.DebugLog(fmt.Sprintf("Added new password (%s) to account", requestBody.PasswordName), request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -272,6 +258,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -279,12 +266,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to change URL. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to change URL. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -292,7 +279,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt change URL. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt change URL. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -300,14 +287,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.ChangePasswordName(requestBody.Token, requestBody.PasswordName, requestBody.NewPasswordName)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to change URL (%s). Cant add password.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to change URL (%s). Cant add password.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Changed URL (%s)", requestBody.PasswordName), request)
+                tools.DebugLog(fmt.Sprintf("Changed URL (%s)", requestBody.PasswordName), request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -319,6 +306,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -326,12 +314,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to change secret. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to change secret. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -339,7 +327,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt change secret. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt change secret. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -347,14 +335,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.ChangePassword(requestBody.Token, requestBody.PasswordName, requestBody.NewSecret)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to change secret (%s). Cant change secret.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to change secret (%s). Cant change secret.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Changed secret (%s)", requestBody.PasswordName), request)
+                tools.DebugLog(fmt.Sprintf("Changed secret (%s)", requestBody.PasswordName), request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -366,6 +354,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -373,12 +362,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to change Username. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to change Username. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -386,7 +375,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt change Username. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt change Username. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -394,14 +383,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.ChangeUsername(requestBody.Token, requestBody.PasswordName, requestBody.NewURL)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to change URL (%s) . Cant add password.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to change URL (%s) . Cant add password.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Changed Username (%s)", requestBody.PasswordName), request)
+                tools.DebugLog(fmt.Sprintf("Changed Username (%s)", requestBody.PasswordName), request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -413,6 +402,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -420,12 +410,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to change URL. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to change URL. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -433,7 +423,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt change URL. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt change URL. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -441,14 +431,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.ChangeUsername(requestBody.Token, requestBody.PasswordName, requestBody.NewUsername)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to change URL (%s). Cant add password.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to change URL (%s). Cant add password.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Changed URL (%s)", requestBody.PasswordName), request)
+                tools.DebugLog(fmt.Sprintf("Changed URL (%s)", requestBody.PasswordName), request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -460,6 +450,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -467,12 +458,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to check password. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to check password. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -480,7 +471,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt check password. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt check password. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -488,7 +479,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.CheckPassword(requestBody.AccountName, requestBody.MasterPassword, request.RemoteAddr)
                 var responseBody ResponseBody
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt check password on account %s. Password is wrong. (%s)", requestBody.AccountName, requestBody.MasterPassword), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt check password on account %s. Password is wrong. (%s)", requestBody.AccountName, requestBody.MasterPassword), err, request, logger)
                         responseBody = ResponseBody{
                                 Status: false,
                         }
@@ -500,7 +491,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 <span class="cov0" title="0">responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt check password on account %s. Cant marshal password struct. Password is correct", requestBody.AccountName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt check password on account %s. Cant marshal password struct. Password is correct", requestBody.AccountName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -508,7 +499,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
                 if responseBody.Status </span><span class="cov0" title="0">{
-                        tools.DebugLog(fmt.Sprintf("Checked password from account %s. Password is correct", requestBody.AccountName), request)
+                        tools.DebugLog(fmt.Sprintf("Checked password from account %s. Password is correct", requestBody.AccountName), request, logger)
                 }</span>
                 <span class="cov0" title="0">response.Write(responseBytes)</span>
         }
@@ -520,6 +511,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 import (
         "encoding/json"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -527,12 +519,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to create a account. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to create a account. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -540,7 +532,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to check token. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt to check token. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -553,14 +545,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to check token. Cant marshal response struct.", err, request)
+                        tools.WarningLog("Attempt to check token. Cant marshal response struct.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog("Successfully checked token", request)
+                tools.DebugLog("Successfully checked token", request, logger)
                 response.Write(responseBytes)</span>
         }
 }
@@ -572,6 +564,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -579,12 +572,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to create new token. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to create new token. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -592,7 +585,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt get url. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt get url. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -600,7 +593,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">token, err := store.CreateToken(requestBody.AccountName, requestBody.Password, request.RemoteAddr)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to create new token (%s). Cant create token.", requestBody.AccountName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to create new token (%s). Cant create token.", requestBody.AccountName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -611,14 +604,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to create new token(%s). Cant marshal token struct.", requestBody.AccountName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to create new token(%s). Cant marshal token struct.", requestBody.AccountName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Successfully new token on account %s created", requestBody.AccountName), request)
+                tools.DebugLog(fmt.Sprintf("Successfully new token on account %s created", requestBody.AccountName), request, logger)
                 response.Write(responseBytes)</span>
         }
 }
@@ -630,6 +623,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -637,12 +631,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to delete password. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to delete password. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -650,7 +644,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt delete password. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt delete password. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -658,14 +652,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.DeletePassword(requestBody.Token, requestBody.PasswordName)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to delete password (%s). Cant add password.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to delete password (%s). Cant add password.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Deleted password (%s)", requestBody.PasswordName), request)
+                tools.DebugLog(fmt.Sprintf("Deleted password (%s)", requestBody.PasswordName), request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -677,6 +671,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -684,12 +679,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to delete account. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to delete account. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -697,7 +692,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt delete account. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt delete account. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -705,14 +700,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.DeleteAccount(requestBody.AccountName, requestBody.Token)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to delete account %s. Cant delete account.", requestBody.AccountName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to delete account %s. Cant delete account.", requestBody.AccountName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Deleted account  %s", requestBody.AccountName), request)
+                tools.DebugLog(fmt.Sprintf("Deleted account  %s", requestBody.AccountName), request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -723,6 +718,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 import (
         "encoding/json"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -730,12 +726,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to devalue all tokens. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to devalue all tokens. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -743,7 +739,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to devalue all tokens. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt to devalue all tokens. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -751,7 +747,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.DevalueAllTokens(requestBody.Password)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to devalue all tokens. Cant devalue all.", err, request)
+                        tools.WarningLog("Attempt to devalue all tokens. Cant devalue all.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -759,7 +755,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "text/plain")
                 response.WriteHeader(http.StatusOK)
                 response.Header().Set("ok", "true")
-                tools.DebugLog("Successfully all tokens devalued.", request)
+                tools.DebugLog("Successfully all tokens devalued.", request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -770,6 +766,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 import (
         "encoding/json"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -777,12 +774,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to devalue all tokens from account. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to devalue all tokens from account. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -790,7 +787,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to devalue all tokens from account. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt to devalue all tokens from account. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -798,7 +795,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">err = store.DevalueAllTokensOfAccount(requestBody.Token)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to devalue all tokens from account. Cant devalue token.", err, request)
+                        tools.WarningLog("Attempt to devalue all tokens from account. Cant devalue token.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -806,7 +803,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "text/plain")
                 response.WriteHeader(http.StatusOK)
                 response.Header().Set("ok", "true")
-                tools.DebugLog("Successfully all tokens of account devalued.", request)
+                tools.DebugLog("Successfully all tokens of account devalued.", request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -817,6 +814,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 import (
         "encoding/json"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -824,12 +822,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to create a account. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to create a account. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -837,7 +835,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to create a account. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt to create a account. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -846,7 +844,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 response.Header().Set("Content-Type", "text/plain")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog("Successfully token devalued.", request)
+                tools.DebugLog("Successfully token devalued.", request, logger)
                 response.Write([]byte(http.StatusText(http.StatusOK)))</span>
         }
 }
@@ -858,21 +856,21 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
-        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
 
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to disable syncronization. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to disable syncronization. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -880,14 +878,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to disable syncronization. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt to disable syncronization. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">status, err := store.DisableSync(requestBody.Password)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to disable syncronization. Wrong password", err, request)
+                        tools.WarningLog("Attempt to disable syncronization. Wrong password", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -898,7 +896,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to disable sync. Cant marshal password struct. SYNC IS STILL DISABLED", err, request)
+                        tools.WarningLog("Attempt to disable sync. Cant marshal password struct. SYNC IS STILL DISABLED", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -906,7 +904,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
                 hostPart := fmt.Sprintf("Run by Host %s (RemoteAddr: %s,\n Proto: %s,\n Pattern: %s,\n URL: %s,\n ReqURI: %s).", request.Host, request.RemoteAddr, request.Proto, request.Pattern, request.URL, request.RequestURI)
-                logger.Critiacal(fmt.Sprintf("[API] DISABLED SYNC: %s", hostPart))
+                logger.Printf("[CRITICAL]-[API] DISABLED SYNC: %s", hostPart)
                 response.Write(responseBytes)</span>
         }
 }
@@ -918,22 +916,22 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
-        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 // TODO: Get Admin Password from env variable and check if it is correct. Than dis/enable sync and run sync to/from file. For now the code is a comment
 
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to enable syncronization. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to enable syncronization. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -941,14 +939,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to enable syncronization. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt to enable syncronization. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">status, err := store.EnableSync(requestBody.Password)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to enable syncronization. Wrong password", err, request)
+                        tools.WarningLog("Attempt to enable syncronization. Wrong password", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -959,7 +957,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to enable sync. Cant marshal password struct. SYNC IS STILL ENABLED", err, request)
+                        tools.WarningLog("Attempt to enable sync. Cant marshal password struct. SYNC IS STILL ENABLED", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -967,7 +965,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
                 hostPart := fmt.Sprintf("Run by Host %s (RemoteAddr: %s,\n Proto: %s,\n Pattern: %s,\n URL: %s,\n ReqURI: %s).", request.Host, request.RemoteAddr, request.Proto, request.Pattern, request.URL, request.RequestURI)
-                logger.Info(fmt.Sprintf("[API] ENABLED SYNC: %s", hostPart))
+                logger.Printf("[INFO] - [API] ENABLED SYNC: %s", hostPart)
                 response.Write(responseBytes)</span>
         }
 }
@@ -978,6 +976,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 import (
         "encoding/json"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -985,12 +984,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get all passwordnames of account. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to get all passwordnames of account. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -998,7 +997,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get all passwordnames of account. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt to get all passwordnames of account. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1006,7 +1005,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">passwordNames, err := store.GetAllPasswordNamesOfAccount(requestBody.Token)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get all passwordnames. Cant get passwords.", err, request)
+                        tools.WarningLog("Attempt to get all passwordnames. Cant get passwords.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1017,14 +1016,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get all passwordnames of account. Cant marshal password struct.", err, request)
+                        tools.WarningLog("Attempt to get all passwordnames of account. Cant marshal password struct.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog("Getted all passwordnames of account.", request)
+                tools.DebugLog("Getted all passwordnames of account.", request, logger)
                 response.Write(responseBytes)</span>
         }
 }
@@ -1035,6 +1034,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 import (
         "encoding/json"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -1042,12 +1042,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get all active tokens of account. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to get all active tokens of account. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1055,7 +1055,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get all active tokens of account. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt to get all active tokens of account. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1063,7 +1063,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">tokensNumber, err := store.GetAllActiveTokens(requestBody.Token)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get all active tokens. Cant get passwords.", err, request)
+                        tools.WarningLog("Attempt to get all active tokens. Cant get passwords.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1074,14 +1074,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get all active tokens of account. Cant marshal password struct.", err, request)
+                        tools.WarningLog("Attempt to get all active tokens of account. Cant marshal password struct.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog("Getted all active tokens of account.", request)
+                tools.DebugLog("Getted all active tokens of account.", request, logger)
                 response.Write(responseBytes)</span>
         }
 }
@@ -1093,6 +1093,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -1100,12 +1101,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get a password. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to get a password. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1113,7 +1114,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt get password. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt get password. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1121,7 +1122,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">password, err := store.GetPassword(requestBody.Token, requestBody.PasswordName)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant get password.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant get password.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1132,14 +1133,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant marshal password struct.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to get the password (%s). Cant marshal password struct.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Getted password (%s)", requestBody.PasswordName), request)
+                tools.DebugLog(fmt.Sprintf("Getted password (%s)", requestBody.PasswordName), request, logger)
                 response.Write(responseBytes)</span>
         }
 }
@@ -1151,6 +1152,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -1158,12 +1160,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get a url. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to get a url. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1171,7 +1173,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt get url. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt get url. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1179,7 +1181,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">url, err := store.GetURL(requestBody.Token, requestBody.PasswordName)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to get the url (%s). Cant get the url.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to get the url (%s). Cant get the url.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1190,14 +1192,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to get the url (%s). Cant marshal url struct.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to get the url (%s). Cant marshal url struct.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Getted url (%s)", requestBody.PasswordName), request)
+                tools.DebugLog(fmt.Sprintf("Getted url (%s)", requestBody.PasswordName), request, logger)
                 response.Write(responseBytes)</span>
         }
 }
@@ -1209,6 +1211,7 @@ import (
         "encoding/json"
         "fmt"
         "io"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -1216,12 +1219,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get a username. Cant read request.", err, request)
+                        tools.WarningLog("Attempt to get a username. Cant read request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1229,7 +1232,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">var requestBody RequestBody
                 err = json.Unmarshal(requestBytes, &amp;requestBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt get username. Cant unmarshal request.", err, request)
+                        tools.WarningLog("Attempt get username. Cant unmarshal request.", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1237,7 +1240,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">username, err := store.GetUsername(requestBody.Token, requestBody.PasswordName)
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to get the username (%s). Cant get the username.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to get the username (%s). Cant get the username.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1248,14 +1251,14 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog(fmt.Sprintf("Attempt to get the username (%s). Cant marshal username struct.", requestBody.PasswordName), err, request)
+                        tools.WarningLog(fmt.Sprintf("Attempt to get the username (%s). Cant marshal username struct.", requestBody.PasswordName), err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
-                tools.DebugLog(fmt.Sprintf("Getted username (%s)", requestBody.PasswordName), request)
+                tools.DebugLog(fmt.Sprintf("Getted username (%s)", requestBody.PasswordName), request, logger)
                 response.Write(responseBytes)</span>
         }
 }
@@ -1266,15 +1269,15 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 import (
         "encoding/json"
         "fmt"
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
-        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 status := store.IsSyncDisabled()
 
@@ -1284,7 +1287,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 
                 responseBytes, err := json.Marshal(responseBody)
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt to get is sync disabled variable. Cant marshal password struct. SYNC IS STILL ENABLED", err, request)
+                        tools.WarningLog("Attempt to get is sync disabled variable. Cant marshal password struct. SYNC IS STILL ENABLED", err, request, logger)
                         http.Error(response, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1292,7 +1295,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
                 <span class="cov0" title="0">response.Header().Set("Content-Type", "application/json")
                 response.WriteHeader(http.StatusOK)
                 hostPart := fmt.Sprintf("Run by Host %s (RemoteAddr: %s,\n Proto: %s,\n Pattern: %s,\n URL: %s,\n ReqURI: %s).", request.Host, request.RemoteAddr, request.Proto, request.Pattern, request.URL, request.RequestURI)
-                logger.Info(fmt.Sprintf("[API] GET IF SYNC IS DISABLED: %s", hostPart))
+                logger.Printf("[INFO]-[API] GET IF SYNC IS DISABLED: %s", hostPart)
                 response.Write(responseBytes)</span>
         }
 }
@@ -1319,6 +1322,8 @@ func Handle() httprouter.Handle <span class="cov0" title="0">{
 		<pre class="file" id="file23" style="display: none">package api
 
 import (
+        "log"
+
         "github.com/julienschmidt/httprouter"
         addnewaccount "github.com/programmierigel/pwmanager/api/addNewAccount"
         addnewpassword "github.com/programmierigel/pwmanager/api/addNewPassword"
@@ -1347,35 +1352,35 @@ import (
         "github.com/programmierigel/pwmanager/storage"
 )
 
-func GetRouter(store storage.Store) *httprouter.Router <span class="cov0" title="0">{
+func GetRouter(store storage.Store, logger *log.Logger) *httprouter.Router <span class="cov0" title="0">{
         router := httprouter.New()
         // QUERYS
         router.GET("/ping", ping.Handle())
         // COMMANDS
-        router.POST("/addNewAccount", addnewaccount.Handle(store))
-        router.POST("/deleteAccount", deleteaccount.Handle(store))
-        router.POST("/addNewPassword", addnewpassword.Handle(store))
-        router.POST("/checkPassword", checkpassword.Handle(store))
-        router.POST("/deletePassword", deletepassword.Handle(store))
-        router.POST("/system/disableSync", disablesync.Handle(store))
-        router.POST("/system/enableSync", enablesync.Handle(store))
-        router.POST("/getAllPasswordsOfAccount", getallpasswordsofaccount.Handle(store))
-        router.POST("/getPassword", getpassword.Handle(store))
-        router.POST("/getUsername", getusername.Handle(store))
-        router.POST("/getUrl", geturl.Handle(store))
-        router.POST("/changePasswordName", changepasswordname.Handle(store))
-        router.POST("/changeUrl", changepasswordname.Handle(store))
-        router.POST("/changeSecret", changesecret.Handle(store))
-        router.POST("/changeUsername", changeusername.Handle(store))
-        router.GET("/system/syncFromFile", syncfromfile.Handle(store))
-        router.GET("/system/syncToFile", synctofile.Handle(store))
-        router.GET("/system/isSyncDisabled", issyncdisabled.Handle(store))
-        router.POST("/system/devalueAllToken", devaluealltoken.Handle(store))
-        router.POST("/devalueAllTokenOfAccount", devaluealltokenofaccount.Handle(store))
-        router.POST("/createToken", createtoken.Handle(store))
-        router.POST("/devalueToken", devaluetoken.Handle(store))
-        router.POST("/checkToken", checktoken.Handle(store))
-        router.POST("/getNumberOfAllRegisteredTokens", getnumberofallregisteredtokens.Handle(store))
+        router.POST("/addNewAccount", addnewaccount.Handle(store, logger))
+        router.POST("/deleteAccount", deleteaccount.Handle(store, logger))
+        router.POST("/addNewPassword", addnewpassword.Handle(store, logger))
+        router.POST("/checkPassword", checkpassword.Handle(store, logger))
+        router.POST("/deletePassword", deletepassword.Handle(store, logger))
+        router.POST("/system/disableSync", disablesync.Handle(store, logger))
+        router.POST("/system/enableSync", enablesync.Handle(store, logger))
+        router.POST("/getAllPasswordsOfAccount", getallpasswordsofaccount.Handle(store, logger))
+        router.POST("/getPassword", getpassword.Handle(store, logger))
+        router.POST("/getUsername", getusername.Handle(store, logger))
+        router.POST("/getUrl", geturl.Handle(store, logger))
+        router.POST("/changePasswordName", changepasswordname.Handle(store, logger))
+        router.POST("/changeUrl", changepasswordname.Handle(store, logger))
+        router.POST("/changeSecret", changesecret.Handle(store, logger))
+        router.POST("/changeUsername", changeusername.Handle(store, logger))
+        router.GET("/system/syncFromFile", syncfromfile.Handle(store, logger))
+        router.GET("/system/syncToFile", synctofile.Handle(store, logger))
+        router.GET("/system/isSyncDisabled", issyncdisabled.Handle(store, logger))
+        router.POST("/system/devalueAllToken", devaluealltoken.Handle(store, logger))
+        router.POST("/devalueAllTokenOfAccount", devaluealltokenofaccount.Handle(store, logger))
+        router.POST("/createToken", createtoken.Handle(store, logger))
+        router.POST("/devalueToken", devaluetoken.Handle(store, logger))
+        router.POST("/checkToken", checktoken.Handle(store, logger))
+        router.POST("/getNumberOfAllRegisteredTokens", getnumberofallregisteredtokens.Handle(store, logger))
         return router
 }</span>
 </pre>
@@ -1383,6 +1388,7 @@ func GetRouter(store storage.Store) *httprouter.Router <span class="cov0" title=
 		<pre class="file" id="file24" style="display: none">package synctofile
 
 import (
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -1390,12 +1396,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 err := store.SyncToFile()
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt sync cached store to file.", err, r)
+                        tools.WarningLog("Attempt sync cached store to file.", err, r, logger)
                         http.Error(w, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1410,6 +1416,7 @@ func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">
 		<pre class="file" id="file25" style="display: none">package syncfromfile
 
 import (
+        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
@@ -1417,12 +1424,12 @@ import (
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 err := store.SyncFromFile()
 
                 if err != nil </span><span class="cov0" title="0">{
-                        tools.WarningLog("Attempt sync cached store from file.", err, r)
+                        tools.WarningLog("Attempt sync cached store from file.", err, r, logger)
                         http.Error(w, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
@@ -1495,36 +1502,34 @@ import (
         "crypto/rand"
         "crypto/sha256"
         "encoding/base64"
-        "fmt"
         "io"
-
-        "github.com/programmierigel/pwmanager/logger"
+        "log"
 )
 
 // Encrypt encrypts a plaintext string using a password
 // Returns base64-encoded encrypted string
-func Encrypt(plaintext, password string) (string, error) <span class="cov8" title="1">{
+func Encrypt(plaintext, password string, logger *log.Logger) (string, error) <span class="cov8" title="1">{
         // Create a hash of the password to use as the AES key
         key := sha256.Sum256([]byte(password))
 
         // Create AES cipher
         block, err := aes.NewCipher(key[:])
         if err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] EncryptionAES: %s", err.Error()))
+                logger.Printf("[CRITICAL]-[CRYPTOGRPHY] EncryptionAES: %s", err.Error())
                 return "", err
         }</span>
 
         // Create a new GCM mode
         <span class="cov8" title="1">gcm, err := cipher.NewGCM(block)
         if err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] EncryptionAES: %s", err.Error()))
+                logger.Printf("[CRITICAL]-[CRYPTOGRPHY] EncryptionAES: %s", err.Error())
                 return "", err
         }</span>
 
         // Generate a nonce (Number used ONCE)
         <span class="cov8" title="1">nonce := make([]byte, gcm.NonceSize())
         if _, err := io.ReadFull(rand.Reader, nonce); err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] EncryptionAES: %s", err.Error()))
+                logger.Printf("[CRITICAL]-[CRYPTOGRPHY] EncryptionAES: %s", err.Error())
                 return "", err
         }</span>
 
@@ -1556,15 +1561,14 @@ import (
         "crypto/rand"
         "encoding/base64"
         "fmt"
-
-        "github.com/programmierigel/pwmanager/logger"
+        "log"
 )
 
 // GenerateSalt creates a cryptographically secure random string
 // suitable for use as a salt in password hashing or other security applications.
 // The length parameter specifies the number of random bytes to generate
 // before base64 encoding (final output will be longer).
-func GenerateSalt(length int) (string, error) <span class="cov8" title="1">{
+func GenerateSalt(length int, logger *log.Logger) (string, error) <span class="cov8" title="1">{
         // Allocate a byte slice to store the random bytes
         randomBytes := make([]byte, length)
 
@@ -1572,7 +1576,7 @@ func GenerateSalt(length int) (string, error) <span class="cov8" title="1">{
         // This is a secure random number generator suitable for cryptographic use
         _, err := rand.Read(randomBytes)
         if err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal(fmt.Sprintf("[CRYPTOGRPHY] Failed to generate random bytes: %s", err.Error()))
+                logger.Printf("[CRITICAL]-[CRYPTOGRPHY] Failed to generate random bytes: %s", err.Error())
                 return "", fmt.Errorf("failed to generate random bytes: %w", err)
         }</span>
 
@@ -1585,19 +1589,18 @@ func GenerateSalt(length int) (string, error) <span class="cov8" title="1">{
 		<pre class="file" id="file30" style="display: none">package enviornment
 
 import (
+        "log"
         "os"
-
-        "github.com/programmierigel/pwmanager/logger"
 )
 
-func Password(defaultPassword string) string <span class="cov8" title="1">{
+func Password(defaultPassword string, logger *log.Logger) string <span class="cov8" title="1">{
         password := os.Getenv("PASSWORD")
 
         if password == "" </span><span class="cov8" title="1">{
-                logger.Info("[Enviornment Vars] Using default password")
+                logger.Printf("[INFO]-[Enviornment Vars] Using default password")
                 return defaultPassword
         }</span>
-        <span class="cov8" title="1">logger.Critiacal("[Enviornment Vars] Using env password")
+        <span class="cov8" title="1">logger.Printf("[CRITICAL]-[Enviornment Vars] Using env password")
         return password</span>
 }
 </pre>
@@ -1605,21 +1608,19 @@ func Password(defaultPassword string) string <span class="cov8" title="1">{
 		<pre class="file" id="file31" style="display: none">package enviornment
 
 import (
-        "fmt"
+        "log"
         "os"
-
-        "github.com/programmierigel/pwmanager/logger"
 )
 
-func Path(defaultPath string) string <span class="cov8" title="1">{
+func Path(defaultPath string, logger *log.Logger) string <span class="cov8" title="1">{
         path := os.Getenv("LOCATION_PATH")
 
         if path == "" </span><span class="cov8" title="1">{
-                logger.Info(fmt.Sprintf("[Enviornment Vars] Path is set to default path: '%s'", defaultPath))
+                logger.Printf("[INFO]-[Enviornment Vars] Path is set to default path: '%s'", defaultPath)
                 return defaultPath
         }</span>
 
-        <span class="cov8" title="1">logger.Info(fmt.Sprintf("[Enviornment Vars] Path is set to env path: '%s'", path))
+        <span class="cov8" title="1">logger.Printf("[INFO]-[Enviornment Vars] Path is set to env path: '%s'", path)
         return path</span>
 }
 </pre>
@@ -1628,17 +1629,16 @@ func Path(defaultPath string) string <span class="cov8" title="1">{
 
 import (
         "fmt"
+        "log"
         "os"
         "strconv"
-
-        "github.com/programmierigel/pwmanager/logger"
 )
 
-func Port(defaultPort int) int <span class="cov8" title="1">{
+func Port(defaultPort int, logger *log.Logger) int <span class="cov8" title="1">{
         portAsString := os.Getenv("PORT")
 
         if portAsString == "" </span><span class="cov8" title="1">{
-                logger.Info(fmt.Sprintf("[Enviornment Vars] Server listen on default port %d", defaultPort))
+                logger.Printf("[INFO]-[Enviornment Vars] Server listen on default port %d", defaultPort)
                 return defaultPort
         }</span>
 
@@ -1647,164 +1647,19 @@ func Port(defaultPort int) int <span class="cov8" title="1">{
                 return defaultPort
         }</span>
         <span class="cov8" title="1">fmt.Println(port)
-        logger.Info(fmt.Sprintf("[Enviornment Vars] Server listen on env port %d", port))
+        logger.Printf("[INFO]-[Enviornment Vars] Server listen on env port %d", port)
         return port</span>
 }
 </pre>
 		
-		<pre class="file" id="file33" style="display: none">package logger
+		<pre class="file" id="file33" style="display: none">package main
 
 import (
         "fmt"
-        "time"
-
-        terminalcolor "github.com/programmierigel/pwmanager/logger/terminalColor"
-)
-
-func Critiacal(s string) <span class="cov8" title="1">{
-        currentTime := time.Now()
-        msg := fmt.Sprintf("[CRITICAL]: %s: "+s, currentTime.Format("15:04:05 - 02.01.2006"))
-
-        fmt.Println(terminalcolor.SetColor(msg, "Red"))
-}</span>
-</pre>
-		
-		<pre class="file" id="file34" style="display: none">package logger
-
-import (
-        "fmt"
-        "time"
-
-        terminalcolor "github.com/programmierigel/pwmanager/logger/terminalColor"
-)
-
-func Debug(s string) <span class="cov0" title="0">{
-        if GetLogLevel() != "debug" </span><span class="cov0" title="0">{
-                return
-        }</span>
-        <span class="cov0" title="0">currentTime := time.Now()
-        msg := fmt.Sprintf("[DEBUG]: %s: ***%s***", currentTime.Format("15:04:05 - 02.01.2006"), s)
-
-        fmt.Println(terminalcolor.SetColor(msg, "Gray"))</span>
-}
-</pre>
-		
-		<pre class="file" id="file35" style="display: none">package logger
-
-import (
-        "os"
-)
-
-func GetLogLevel() string <span class="cov8" title="1">{
-        var DefaultLogLevel = "debug"
-        var PossibleLogLevels = []string{
-                "debug",
-                "normal",
-                "critical",
-        }
-        env := os.Getenv("LOG_LEVEL")
-
-        if isElementInSlice(env, PossibleLogLevels) != nil </span><span class="cov8" title="1">{
-                return DefaultLogLevel
-        }</span>
-
-        <span class="cov0" title="0">return env</span>
-}
-</pre>
-		
-		<pre class="file" id="file36" style="display: none">package logger
-
-import (
-        "fmt"
-        "time"
-
-        terminalcolor "github.com/programmierigel/pwmanager/logger/terminalColor"
-)
-
-func Info(s string) <span class="cov8" title="1">{
-        if GetLogLevel() == "critical" </span><span class="cov0" title="0">{
-                return
-        }</span>
-        <span class="cov8" title="1">currentTime := time.Now()
-        msg := fmt.Sprintf("[INFO]: %s: "+s, currentTime.Format("15:04:05 - 02.01.2006"))
-
-        fmt.Println(terminalcolor.SetColor(msg, "Green"))</span>
-}
-</pre>
-		
-		<pre class="file" id="file37" style="display: none">package logger
-
-import "fmt"
-
-func isElementInSlice(element string, slice []string) error <span class="cov8" title="1">{
-        for _, elementInSlice := range slice </span><span class="cov8" title="1">{
-                if element == elementInSlice </span><span class="cov0" title="0">{
-                        return nil
-                }</span>
-        }
-
-        <span class="cov8" title="1">return fmt.Errorf("element not included")</span>
-
-}
-</pre>
-		
-		<pre class="file" id="file38" style="display: none">package terminalcolor
-
-import "fmt"
-
-func isElementInSlice(element string, slice []string) error <span class="cov8" title="1">{
-        for _, elementInSlice := range slice </span><span class="cov8" title="1">{
-                if element == elementInSlice </span><span class="cov8" title="1">{
-                        return nil
-                }</span>
-        }
-
-        <span class="cov0" title="0">return fmt.Errorf("element not included")</span>
-
-}
-</pre>
-		
-		<pre class="file" id="file39" style="display: none">package terminalcolor
-
-import (
-        "fmt"
-)
-
-func SetColor(s string, code string) string <span class="cov8" title="1">{
-        err := isElementInSlice(code, colors)
-        if err != nil </span><span class="cov0" title="0">{
-                panic(err)</span>
-        }
-
-        <span class="cov8" title="1">return fmt.Sprintf("%s%s%s", colorsWithCodes[code], s, Reset)</span>
-}
-</pre>
-		
-		<pre class="file" id="file40" style="display: none">package logger
-
-import (
-        "fmt"
-        "time"
-
-        terminalcolor "github.com/programmierigel/pwmanager/logger/terminalColor"
-)
-
-func Warning(s string) <span class="cov8" title="1">{
-        if GetLogLevel() == "critical" </span><span class="cov0" title="0">{
-                return
-        }</span>
-        <span class="cov8" title="1">currentTime := time.Now()
-        msg := fmt.Sprintf("[WARN]: %s: "+s, currentTime.Format("15:04:05 - 02.01.2006"))
-
-        fmt.Println(terminalcolor.SetColor(msg, "Yellow"))</span>
-}
-</pre>
-		
-		<pre class="file" id="file41" style="display: none">package main
-
-import (
-        "fmt"
+        "log"
         "net/http"
+        "os"
+        "time"
 
         "github.com/programmierigel/pwmanager/api"
         "github.com/programmierigel/pwmanager/enviornment"
@@ -1812,39 +1667,48 @@ import (
 )
 
 func main() <span class="cov0" title="0">{
-        port := enviornment.Port(3000)
+        now := time.Now()
+        f, err := os.OpenFile(fmt.Sprintf("PWManagerServer - %d.%d.%d.logs", now.Day(), now.Month(), now.Year()),
+                os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+        }</span>
+        <span class="cov0" title="0">defer f.Close()
+        logger := log.New(f, "", log.LstdFlags)
 
-        path := enviornment.Path(".")
-        password := enviornment.Password("123")
+        port := enviornment.Port(3000, logger)
 
-        store := inmemory.New(path, password)
+        path := enviornment.Path(".", logger)
+        password := enviornment.Password("123", logger)
 
-        router := api.GetRouter(store)
+        store := inmemory.New(path, password, logger)
+
+        router := api.GetRouter(store, logger)
         server := &amp;http.Server{
                 Addr:    fmt.Sprintf(":%d", port),
                 Handler: router,
         }
 
-        err := server.ListenAndServe()
+        err = server.ListenAndServe()
         if err != nil </span><span class="cov0" title="0">{
-                panic(err)</span>
-        }
+                logger.Panic(err)
+        }</span>
 }
 </pre>
 		
-		<pre class="file" id="file42" style="display: none">package inmemory
+		<pre class="file" id="file34" style="display: none">package inmemory
 
 import (
         "encoding/json"
         "fmt"
         "io"
         "io/fs"
+        "log"
         "os"
         "time"
 
         "github.com/google/uuid"
         "github.com/programmierigel/pwmanager/cryptography"
-        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/manager"
         "github.com/programmierigel/pwmanager/tools"
 )
@@ -1857,9 +1721,10 @@ type Store struct {
         password             string
         token                map[string]manager.Token
         remoteRequestAddress map[string]map[string]manager.RemoteRequestAddress
+        logger               *log.Logger
 }
 
-func New(path string, password string) *Store <span class="cov8" title="1">{
+func New(path string, password string, logger *log.Logger) *Store <span class="cov8" title="1">{
 
         store := &amp;Store{
                 file:                 fmt.Sprintf("%s/secrets.json", path),
@@ -1869,22 +1734,23 @@ func New(path string, password string) *Store <span class="cov8" title="1">{
                 password:             password,
                 token:                make(map[string]manager.Token),
                 remoteRequestAddress: make(map[string]map[string]manager.RemoteRequestAddress),
+                logger:               logger,
         }
         store.SyncFromFile()
-        logger.Info("[STORE] New Store was created")
+        logger.Printf("[INFO]-[STORE] New Store was created")
         return store
 }</span>
 
 func (s *Store) SyncFromFile() error <span class="cov8" title="1">{
         if s.syncDisabled </span><span class="cov0" title="0">{
-                logger.Critiacal("[STORE] syncronization is disabled")
+                s.logger.Printf("[CRITICAL]-[STORE] syncronization is disabled")
                 return nil
         }</span>
 
         <span class="cov8" title="1">jsonFile, err := os.Open(s.file)
 
         if err != nil </span><span class="cov8" title="1">{
-                logger.Critiacal("[STORE] Secrets file was not found")
+                s.logger.Printf("[CRITICAL]-[STORE] Secrets file was not found")
                 return err
         }</span>
 
@@ -1896,18 +1762,18 @@ func (s *Store) SyncFromFile() error <span class="cov8" title="1">{
 
         err = json.Unmarshal(byteValue, &amp;secretsFile)
         if err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal("[STORE] Content of secrets file is not compatible to JSON")
+                s.logger.Printf("[CRITICAL]-[STORE] Content of secrets file is not compatible to JSON")
                 return err
         }</span>
         <span class="cov0" title="0">s.decryptionPasswords = secretsFile.MainPasswords
         s.secrets = secretsFile.Secrets
-        logger.Info("[STORE] System load save from file")
+        s.logger.Printf("[INFO]-[STORE] System load save from file")
         return nil</span>
 }
 
 func (s *Store) SyncToFile() error <span class="cov8" title="1">{
         if s.syncDisabled </span><span class="cov0" title="0">{
-                logger.Critiacal("[STORE] syncronization is disabled")
+                s.logger.Printf("[CRITICAL]-[STORE] syncronization is disabled")
                 return nil
         }</span>
 
@@ -1918,28 +1784,28 @@ func (s *Store) SyncToFile() error <span class="cov8" title="1">{
 
         parsedFile, err := json.Marshal(file)
         if err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal("[STORE] Content of secrets file is not compatible to JSON")
+                s.logger.Printf("[CRITICAL]-[STORE] Content of secrets file is not compatible to JSON")
                 return err
         }</span>
 
         <span class="cov8" title="1">err = os.WriteFile(s.file, parsedFile, fs.FileMode(0222))
         if err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal("[STORE] Content cant saved to secrets file")
+                s.logger.Printf("[CRITICAL]-[STORE] Content cant saved to secrets file")
                 return err
         }</span>
-        <span class="cov8" title="1">logger.Info("[STORE] System saved to file")
+        <span class="cov8" title="1">s.logger.Printf("[INFO]-[STORE] System saved to file")
         return nil</span>
 
 }
 
 func (s *Store) AddNewAccount(account string, password string) error <span class="cov8" title="1">{
-        salt, err := cryptography.GenerateSalt(15)
+        salt, err := cryptography.GenerateSalt(15, s.logger)
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
         <span class="cov8" title="1">s.SyncFromFile()
         if s.decryptionPasswords[account].PasswordHash != "" </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attempt to create a account that already exists (account name: %s)", account))
+                s.logger.Printf("[WARN]-[STORE] Attempt to create a account that already exists (account name: %s)", account)
                 return fmt.Errorf("account already exists")
         }</span>
         <span class="cov8" title="1">updatePasswordStruct := manager.Password{
@@ -1948,41 +1814,41 @@ func (s *Store) AddNewAccount(account string, password string) error <span class
         }
 
         s.decryptionPasswords[account] = updatePasswordStruct
-        logger.Info(fmt.Sprintf("[STORE] New Account was created with name %s", account))
+        s.logger.Printf("[INFO]-[STORE] New Account was created with name %s", account)
         s.SyncToFile()
         return nil</span>
 }
 
 func (s *Store) DeleteAccount(account string, token string) error <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to delete account %s account. Failed due to incorrect token.", account))
+                s.logger.Printf("[WARN]-[STORE] Attemt to delete account %s account. Failed due to incorrect token.", account)
                 return fmt.Errorf("incorrect token")
         }</span>
         <span class="cov8" title="1">if s.token[token].AccountName != account </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to delete account %s account. Failed due trying to delete other account", account))
+                s.logger.Printf("[WARN]-[STORE] Attemt to delete account %s account. Failed due trying to delete other account", account)
                 return fmt.Errorf("cant delete other account")
         }</span>
         <span class="cov8" title="1">s.decryptionPasswords = tools.RemovePasswordFromMap(s.decryptionPasswords, account)
         s.secrets = tools.RemoveMapFromMap(s.secrets, account)
-        logger.Warning(fmt.Sprintf("[STORE] Account %s was deleted", account))
+        s.logger.Printf("[WARN]-[STORE] Account %s was deleted", account)
         s.SyncToFile()
         return nil</span>
 }
 
 func (s *Store) AddNewPassword(token string, passwordName string, passwordToAdd string, url string, username string) error <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to add a password (%s). Failed due to incorrect password.", passwordName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to add a password (%s). Failed due to incorrect password.", passwordName)
                 return fmt.Errorf("incorrect token")
         }</span>
         <span class="cov8" title="1">tokenValue := s.token[token]
 
         if tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to add a password (%s) on account %s but account already exists.", passwordName, tokenValue.AccountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to add a password (%s) on account %s but account already exists.", passwordName, tokenValue.AccountName)
                 return fmt.Errorf("already exists")
         }</span>
-        <span class="cov8" title="1">hash, err := cryptography.Encrypt(passwordToAdd, tokenValue.MasterPassword)
+        <span class="cov8" title="1">hash, err := cryptography.Encrypt(passwordToAdd, tokenValue.MasterPassword, s.logger)
         if err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal(fmt.Sprintf("[STORE] Cant hash password: %s", err.Error()))
+                s.logger.Printf("[CRITICAL]-[STORE] Cant hash password: %s", err.Error())
                 return err
         }</span>
 
@@ -1997,44 +1863,44 @@ func (s *Store) AddNewPassword(token string, passwordName string, passwordToAdd 
         }
 
         s.secrets[tokenValue.AccountName][passwordName] = secretsObject
-        logger.Info(fmt.Sprintf("[STORE] New password (%s) added on account %s", passwordName, tokenValue.AccountName))
+        s.logger.Printf("[INFO]-[STORE] New password (%s) added on account %s", passwordName, tokenValue.AccountName)
         s.SyncToFile()
         return nil</span>
 }
 
 func (s *Store) DeletePassword(token string, passwordName string) error <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to delete password (%s) on account. Failed due to incorrect token.", passwordName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to delete password (%s) on account. Failed due to incorrect token.", passwordName)
                 return fmt.Errorf("incorrect token")
         }</span>
         <span class="cov8" title="1">tokenValue := s.token[token]
 
         if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) </span><span class="cov8" title="1">{
-                logger.Warning("[Store] Attempt to deleting non-existing password")
+                s.logger.Printf("[WARN]-[STORE] Attempt to deleting non-existing password")
                 return fmt.Errorf("passwordname does not exist")
         }</span>
 
         <span class="cov8" title="1">s.secrets[tokenValue.AccountName] = tools.RemoveStringFromMap(s.secrets[tokenValue.AccountName], passwordName)
-        logger.Warning(fmt.Sprintf("[STORE] Deleted %s password on account %s", passwordName, tokenValue.AccountName))
+        s.logger.Printf("[WARN]-[STORE] Deleted %s password on account %s", passwordName, tokenValue.AccountName)
         s.SyncToFile()
         return nil</span>
 }
 
 func (s *Store) GetPassword(token string, passwordName string) (string, error) <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to get password %s from account. Failed due to incorrect token to decryption.", passwordName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to get password %s from account. Failed due to incorrect token to decryption.", passwordName)
                 return "", fmt.Errorf("incorrect token")
         }</span>
         <span class="cov8" title="1">tokenValue := s.token[token]
         if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to get password %s from account %s but password doesn't exists on account", passwordName, tokenValue.AccountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to get password %s from account %s but password doesn't exists on account", passwordName, tokenValue.AccountName)
                 return "", fmt.Errorf("password on account not found")
         }</span>
-        <span class="cov8" title="1">defer logger.Info(fmt.Sprintf("[STORE] Password to %s on account %s successfully returned", passwordName, tokenValue.AccountName))
+        <span class="cov8" title="1">defer s.logger.Printf("[INFO]-[STORE] Password to %s on account %s successfully returned", passwordName, tokenValue.AccountName)
 
         password, err := cryptography.Decrypt(s.secrets[tokenValue.AccountName][passwordName].Secret, tokenValue.MasterPassword)
         if err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal(fmt.Sprintf("[STORE] Cant return password: %s", err.Error()))
+                s.logger.Printf("[CRITICAL]-[STORE] Cant return password: %s", err.Error())
                 return "", err
         }</span>
         <span class="cov8" title="1">return password, nil</span>
@@ -2042,16 +1908,16 @@ func (s *Store) GetPassword(token string, passwordName string) (string, error) <
 
 func (s *Store) GetURL(token string, passwordName string) (string, error) <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to get url %s from account. Failed due to incorrect token.", passwordName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to get url %s from account. Failed due to incorrect token.", passwordName)
                 return "", fmt.Errorf("incorrect token")
         }</span>
         <span class="cov8" title="1">tokenValue := s.token[token]
 
         if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to get url %s from account %s but url doesn't exists on account", passwordName, tokenValue.AccountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to get url %s from account %s but url doesn't exists on account", passwordName, tokenValue.AccountName)
                 return "", fmt.Errorf("url on account not found")
         }</span>
-        <span class="cov8" title="1">defer logger.Info(fmt.Sprintf("[STORE] Url to %s on account %s successfully returned", passwordName, tokenValue.AccountName))
+        <span class="cov8" title="1">defer s.logger.Printf("[INFO]-[STORE] Url to %s on account %s successfully returned", passwordName, tokenValue.AccountName)
 
         url := s.secrets[tokenValue.AccountName][passwordName].URL
         return url, nil</span>
@@ -2059,16 +1925,16 @@ func (s *Store) GetURL(token string, passwordName string) (string, error) <span 
 
 func (s *Store) GetUsername(token string, passwordName string) (string, error) <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to get username %s from account. Failed due to incorrect token.", passwordName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to get username %s from account. Failed due to incorrect token.", passwordName)
                 return "", fmt.Errorf("incorrect token")
         }</span>
         <span class="cov8" title="1">tokenValue := s.token[token]
 
         if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to get username %s from account %s but url doesn't exists on account", s.secrets[tokenValue.AccountName][passwordName].Username, tokenValue.AccountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to get username %s from account %s but url doesn't exists on account", s.secrets[tokenValue.AccountName][passwordName].Username, tokenValue.AccountName)
                 return "", fmt.Errorf("url on account not found")
         }</span>
-        <span class="cov8" title="1">defer logger.Info(fmt.Sprintf("[STORE] Username to %s on account %s successfully returned", passwordName, tokenValue.AccountName))
+        <span class="cov8" title="1">defer s.logger.Printf("[INFO]-[STORE] Username to %s on account %s successfully returned", passwordName, tokenValue.AccountName)
 
         username := s.secrets[tokenValue.AccountName][passwordName].Username
         return username, nil</span>
@@ -2076,7 +1942,7 @@ func (s *Store) GetUsername(token string, passwordName string) (string, error) <
 
 func (s *Store) GetAllPasswordNamesOfAccount(token string) ([]string, error) <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning("[STORE] Attemt to get all registered passwords from account. Failed due to incorrect token to decryption.")
+                s.logger.Printf("[WARN]-[STORE] Attemt to get all registered passwords from account. Failed due to incorrect token to decryption.")
                 return make([]string, 0), fmt.Errorf("incorrect token")
         }</span>
 
@@ -2085,7 +1951,7 @@ func (s *Store) GetAllPasswordNamesOfAccount(token string) ([]string, error) <sp
         for name := range s.secrets[tokenValue.AccountName] </span><span class="cov8" title="1">{
                 allPasswordNames = append(allPasswordNames, name)
         }</span>
-        <span class="cov8" title="1">logger.Info(fmt.Sprintf("[STORE] All PasswordNames of Account %s returned", tokenValue.AccountName))
+        <span class="cov8" title="1">s.logger.Printf("[INFO]-[STORE] All PasswordNames of Account %s returned", tokenValue.AccountName)
         return allPasswordNames, nil</span>
 
 }
@@ -2095,7 +1961,7 @@ func (s *Store) DisableSync(password string) (bool, error) <span class="cov8" ti
                 return s.syncDisabled, fmt.Errorf("wrong password")
         }</span>
         <span class="cov8" title="1">s.syncDisabled = true
-        logger.Critiacal("[STORE] !SYNC IS DISABLED!")
+        s.logger.Printf("[CRITICAL]-[STORE] !SYNC IS DISABLED!")
         return s.syncDisabled, nil</span>
 }
 
@@ -2104,7 +1970,7 @@ func (s *Store) EnableSync(password string) (bool, error) <span class="cov8" tit
                 return s.syncDisabled, fmt.Errorf("wrong password")
         }</span>
         <span class="cov8" title="1">s.syncDisabled = false
-        logger.Info("[STORE] SYNC IS ENABLED")
+        s.logger.Printf("[INFO]-[STORE] SYNC IS ENABLED")
         return s.syncDisabled, nil</span>
 }
 
@@ -2114,16 +1980,16 @@ func (s *Store) IsSyncDisabled() bool <span class="cov8" title="1">{
 
 func (s *Store) ChangeUsername(token string, passwordName string, newUsername string) error <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to change username to %s. Failed due to incorrect token.", newUsername))
+                s.logger.Printf("[WARN]-[STORE] Attemt to change username to %s. Failed due to incorrect token.", newUsername)
                 return fmt.Errorf("incorrect token")
         }</span>
         <span class="cov8" title="1">tokenValue := s.token[token]
 
         if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to change username %s from account %s but username doesn't exists on account", passwordName, tokenValue.AccountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to change username %s from account %s but username doesn't exists on account", passwordName, tokenValue.AccountName)
                 return fmt.Errorf("username on account not found")
         }</span>
-        <span class="cov8" title="1">defer logger.Info(fmt.Sprintf("[STORE] URL to %s on account %s successfully changed", passwordName, tokenValue.AccountName))
+        <span class="cov8" title="1">defer s.logger.Printf("[INFO]-[STORE] URL to %s on account %s successfully changed", passwordName, tokenValue.AccountName)
 
         currentPasswordStruct := s.secrets[tokenValue.AccountName][passwordName]
         s.secrets[tokenValue.AccountName][passwordName] = manager.Secret{
@@ -2136,17 +2002,16 @@ func (s *Store) ChangeUsername(token string, passwordName string, newUsername st
 
 func (s *Store) ChangeURL(token string, passwordName string, newURL string) error <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to change URL to %s. Failed due to incorrect password.", newURL))
+                s.logger.Printf("[WARN]-[STORE] Attemt to change URL to %s. Failed due to incorrect password.", newURL)
                 return fmt.Errorf("incorrect token")
         }</span>
 
         <span class="cov8" title="1">tokenValue := s.token[token]
         if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to change url %s from account %s but url doesn't exists on account", passwordName, tokenValue.AccountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to change url %s from account %s but url doesn't exists on account", passwordName, tokenValue.AccountName)
                 return fmt.Errorf("username on account not found")
         }</span>
-        <span class="cov8" title="1">defer logger.Info(fmt.Sprintf("[STORE] URL to %s on account %s successfully changed", passwordName, tokenValue.AccountName))
-
+        <span class="cov8" title="1">defer s.logger.Printf("[INFO]-[STORE] URL to %s on account %s successfully changed", passwordName, tokenValue.AccountName)
         currentPasswordStruct := s.secrets[tokenValue.AccountName][passwordName]
         s.secrets[tokenValue.AccountName][passwordName] = manager.Secret{
                 URL:      newURL,
@@ -2158,20 +2023,20 @@ func (s *Store) ChangeURL(token string, passwordName string, newURL string) erro
 
 func (s *Store) ChangePassword(token string, passwordName string, newSecret string) error <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to change password to %s. Failed due to incorrect token.", newSecret))
+                s.logger.Printf("[WARN]-[STORE] Attemt to change password to %s. Failed due to incorrect token.", newSecret)
                 return fmt.Errorf("incorrect token")
         }</span>
         <span class="cov8" title="1">tokenValue := s.token[token]
 
         if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to change password %s from account %s but url doesn't exists on account", passwordName, tokenValue.AccountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to change password %s from account %s but url doesn't exists on account", passwordName, tokenValue.AccountName)
                 return fmt.Errorf("username on account not found")
         }</span>
-        <span class="cov8" title="1">defer logger.Info(fmt.Sprintf("[STORE] URL to %s on account %s successfully changed", passwordName, tokenValue.AccountName))
+        <span class="cov8" title="1">defer s.logger.Printf("[INFO]-[STORE] URL to %s on account %s successfully changed", passwordName, tokenValue.AccountName)
 
-        hash, err := cryptography.Encrypt(newSecret, tokenValue.MasterPassword)
+        hash, err := cryptography.Encrypt(newSecret, tokenValue.MasterPassword, s.logger)
         if err != nil </span><span class="cov0" title="0">{
-                logger.Critiacal(fmt.Sprintf("[STORE] Cant hash password: %s", err.Error()))
+                s.logger.Printf("[CRITICAL]-[STORE] Cant hash password: %s", err.Error())
                 return err
         }</span>
 
@@ -2186,21 +2051,21 @@ func (s *Store) ChangePassword(token string, passwordName string, newSecret stri
 
 func (s *Store) ChangePasswordName(token string, passwordName string, newPasswordName string) error <span class="cov0" title="0">{
         if !s.CheckToken(token) </span><span class="cov0" title="0">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to change passwordname %s to %s. Failed due to incorrect token.", passwordName, newPasswordName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to change passwordname %s to %s. Failed due to incorrect token.", passwordName, newPasswordName)
                 return fmt.Errorf("incorrect token")
         }</span>
         <span class="cov0" title="0">tokenValue := s.token[token]
 
         if tools.IsElementInMap(newPasswordName, s.secrets[tokenValue.AccountName]) </span><span class="cov0" title="0">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to change passwordname %s from account %s but id already exists", passwordName, tokenValue.AccountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to change passwordname %s from account %s but id already exists", passwordName, tokenValue.AccountName)
                 return fmt.Errorf("new passwordname already exists (overwrite)")
         }</span>
 
         <span class="cov0" title="0">if !tools.IsElementInMap(passwordName, s.secrets[tokenValue.AccountName]) </span><span class="cov0" title="0">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to change passwordname %s from account %s but but passwordname doesn't exists on account", passwordName, tokenValue.AccountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to change passwordname %s from account %s but but passwordname doesn't exists on account", passwordName, tokenValue.AccountName)
                 return fmt.Errorf("passwordname on account not found")
         }</span>
-        <span class="cov0" title="0">defer logger.Info(fmt.Sprintf("[STORE] Passwordname to %s on account %s successfully changed", passwordName, tokenValue.AccountName))
+        <span class="cov0" title="0">defer s.logger.Printf("[INFO]-[STORE] Passwordname to %s on account %s successfully changed", passwordName, tokenValue.AccountName)
 
         s.secrets[tokenValue.AccountName][passwordName] = s.secrets[tokenValue.AccountName][newPasswordName]
 
@@ -2214,7 +2079,7 @@ func (s *Store) CreateToken(accountName string, masterpassword string, remoteAdd
 
         err := s.CheckPassword(accountName, masterpassword, remoteAddress)
         if err != nil </span><span class="cov8" title="1">{
-                logger.Warning(fmt.Sprintf("[STORE] Attemt to create token on account %s. Failed due to incorrect password.", accountName))
+                s.logger.Printf("[WARN]-[STORE] Attemt to create token on account %s. Failed due to incorrect password.", accountName)
                 return "", err
         }</span>
         <span class="cov8" title="1">newID := uuid.New().String()
@@ -2227,7 +2092,7 @@ func (s *Store) CreateToken(accountName string, masterpassword string, remoteAdd
                 AccountName:    accountName,
                 MasterPassword: masterpassword,
         }
-        logger.Info(fmt.Sprintf("[STORE] Successfully token on account %s created.", accountName))
+        s.logger.Printf("[INFO]-[STORE] Successfully token on account %s created.", accountName)
         return newID, nil</span>
 
 }
@@ -2235,12 +2100,12 @@ func (s *Store) CreateToken(accountName string, masterpassword string, remoteAdd
 func (s *Store) CheckToken(token string) bool <span class="cov8" title="1">{
         currentTime := time.Now()
         if !tools.IsIDInMap(token, s.token) </span><span class="cov8" title="1">{
-                logger.Info("[STORE] token to check not registered")
+                s.logger.Printf("[INFO]-[STORE] token to check not registered")
                 return false
         }</span>
         <span class="cov8" title="1">oneHourInMillisec := int64(3600000)
         if currentTime.UnixMilli()-s.token[token].Timestamp.UnixMilli() &gt; oneHourInMillisec </span><span class="cov0" title="0">{
-                logger.Info("[STORE] time of token to check is over")
+                s.logger.Printf("[INFO]-[STORE] time of token to check is over")
                 s.token = tools.RemoveTokenFromMap(token, s.token)
                 return false
         }</span>
@@ -2252,7 +2117,7 @@ func (s *Store) DevalueToken(token string) <span class="cov8" title="1">{
                 return
         }</span>
 
-        <span class="cov8" title="1">defer logger.Info((fmt.Sprintf("[STORE] Successfully token from account %s devalued", s.token[token].AccountName)))
+        <span class="cov8" title="1">defer s.logger.Printf((fmt.Sprintf("[INFO]-[STORE] Successfully token from account %s devalued", s.token[token].AccountName)))
         s.token = tools.RemoveTokenFromMap(token, s.token)</span>
 }
 
@@ -2268,17 +2133,17 @@ func (s *Store) CheckPassword(account string, password string, remoteAddress str
         switch </span>{
         case accessess &gt; 3:<span class="cov0" title="0">
                 if currentTime.UnixMilli()-timestamp.UnixMilli() &lt; time.Minute.Milliseconds()*5 </span><span class="cov0" title="0">{
-                        logger.Warning("[STORE] Too many tries to check password! Must wait!")
+                        s.logger.Printf("[WARN]-[STORE] Too many tries to check password! Must wait!")
                         return fmt.Errorf("too many tries! please wait")
                 }</span>
         case accessess &gt; 6:<span class="cov0" title="0">
                 if currentTime.UnixMilli()-timestamp.UnixMilli() &lt; time.Hour.Milliseconds() </span><span class="cov0" title="0">{
-                        logger.Warning("[STORE] Too many tries to check password! Must wait!")
+                        s.logger.Printf("[WARN]-[STORE] Too many tries to check password! Must wait!")
                         return fmt.Errorf("too many tries! please wait")
                 }</span>
         case accessess &gt; 9:<span class="cov0" title="0">
                 if currentTime.UnixMilli()-timestamp.UnixMilli() &lt; time.Hour.Milliseconds()*24 </span><span class="cov0" title="0">{
-                        logger.Warning("[STORE] Too many tries to check password! Must wait!")
+                        s.logger.Printf("[WARN]-[STORE] Too many tries to check password! Must wait!")
                         return fmt.Errorf("too many tries! please wait")
                 }</span>
 
@@ -2308,19 +2173,19 @@ func (s *Store) CheckPassword(account string, password string, remoteAddress str
 
 func (s *Store) DevalueAllTokens(password string) error <span class="cov8" title="1">{
         if password != s.password </span><span class="cov8" title="1">{
-                logger.Warning("[STORE] Attempt to devalue all tokens. Failed due incorrect password")
+                s.logger.Printf("[WARN]-[STORE] Attempt to devalue all tokens. Failed due incorrect password")
                 return fmt.Errorf("incorrect password")
         }</span>
         // Path and Password are not needed to create new token object
-        <span class="cov8" title="1">newStore := New("", "")
+        <span class="cov8" title="1">newStore := New("", "", s.logger)
         s.token = newStore.token
-        logger.Warning("[STORE] All tokens succesfully devalued!")
+        s.logger.Printf("[WARN]-[STORE] All tokens succesfully devalued!")
         return nil</span>
 }
 
 func (s *Store) DevalueAllTokensOfAccount(token string) error <span class="cov8" title="1">{
         if !s.CheckToken(token) </span><span class="cov8" title="1">{
-                logger.Warning("[STORE] Attempt to devalue all tokens of account. Token incorrect")
+                s.logger.Printf("[WARN]-[STORE] Attempt to devalue all tokens of account. Token incorrect")
                 return fmt.Errorf("token incorrect")
         }</span>
 
@@ -2333,13 +2198,13 @@ func (s *Store) DevalueAllTokensOfAccount(token string) error <span class="cov8"
                 <span class="cov8" title="1">remainingTokens[tokenIterator] = tokenValue</span>
         }
         <span class="cov8" title="1">s.token = remainingTokens
-        logger.Info(fmt.Sprintf("[STORE] Successfully all tokens of account %s devalued", accountName))
+        s.logger.Printf("[INFO]-[STORE] Successfully all tokens of account %s devalued", accountName)
         return nil</span>
 }
 
 func (s *Store) GetAllActiveTokens(token string) (uint, error) <span class="cov0" title="0">{
         if !s.CheckToken(token) </span><span class="cov0" title="0">{
-                logger.Warning("[STORE] Attemt to get the number of all active tokens %s. Failed due to incorrect token.")
+                s.logger.Println("[WARN]-[STORE] Attemt to get the number of all active tokens. Failed due to incorrect token.")
                 return 0, fmt.Errorf("incorrect token")
         }</span>
         <span class="cov0" title="0">tokenValue := s.token[token]
@@ -2352,27 +2217,26 @@ func (s *Store) GetAllActiveTokens(token string) (uint, error) <span class="cov0
                 }
                 <span class="cov0" title="0">continue</span>
         }
-        <span class="cov0" title="0">logger.Info("[STORE] Successuly number of all active tokens returned")
+        <span class="cov0" title="0">s.logger.Printf("[INFO]-[STORE] Successuly number of all active tokens returned")
         return numberOfRegisteredTokens, nil</span>
 }
 </pre>
 		
-		<pre class="file" id="file43" style="display: none">package tools
+		<pre class="file" id="file35" style="display: none">package tools
 
 import (
         "fmt"
+        "log"
         "net/http"
-
-        "github.com/programmierigel/pwmanager/logger"
 )
 
-func DebugLog(s string, request *http.Request) <span class="cov0" title="0">{
+func DebugLog(s string, request *http.Request, logger *log.Logger) <span class="cov0" title="0">{
         hostPart := fmt.Sprintf("Run by Host %s (RemoteAddr: %s,\n Proto: %s,\n Pattern: %s,\n URL: %s,\n ReqURI: %s).", request.Host, request.RemoteAddr, request.Proto, request.Pattern, request.URL, request.RequestURI)
-        logger.Debug(fmt.Sprintf("[API] %s\n%s", s, hostPart))
+        logger.Printf("[DEBUG]-[API] %s\n%s", s, hostPart)
 }</span>
 </pre>
 		
-		<pre class="file" id="file44" style="display: none">package tools
+		<pre class="file" id="file36" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2388,7 +2252,7 @@ func IsElementInMap(element string, mapInput map[string]manager.Secret) bool <sp
 }
 </pre>
 		
-		<pre class="file" id="file45" style="display: none">package tools
+		<pre class="file" id="file37" style="display: none">package tools
 
 import "fmt"
 
@@ -2404,7 +2268,7 @@ func IsElementInSlice(element string, slice []string) error <span class="cov0" t
 }
 </pre>
 		
-		<pre class="file" id="file46" style="display: none">package tools
+		<pre class="file" id="file38" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2418,7 +2282,7 @@ func IsIDInMap(id string, Map map[string]manager.Token) bool <span class="cov8" 
 }
 </pre>
 		
-		<pre class="file" id="file47" style="display: none">package tools
+		<pre class="file" id="file39" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2436,7 +2300,7 @@ func RemoveMapFromMap(mapToFind map[string]map[string]manager.Secret, element st
 }
 </pre>
 		
-		<pre class="file" id="file48" style="display: none">package tools
+		<pre class="file" id="file40" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2454,7 +2318,7 @@ func RemovePasswordFromMap(mapToFind map[string]manager.Password, element string
 }
 </pre>
 		
-		<pre class="file" id="file49" style="display: none">package tools
+		<pre class="file" id="file41" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2472,7 +2336,7 @@ func RemoveStringFromMap(mapToFind map[string]manager.Secret, element string) ma
 }
 </pre>
 		
-		<pre class="file" id="file50" style="display: none">package tools
+		<pre class="file" id="file42" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2490,19 +2354,18 @@ func RemoveTokenFromMap(token string, Map map[string]manager.Token) map[string]m
 }
 </pre>
 		
-		<pre class="file" id="file51" style="display: none">package tools
+		<pre class="file" id="file43" style="display: none">package tools
 
 import (
         "fmt"
+        "log"
         "net/http"
-
-        "github.com/programmierigel/pwmanager/logger"
 )
 
-func WarningLog(s string, errorMsg error, request *http.Request) <span class="cov0" title="0">{
+func WarningLog(s string, errorMsg error, request *http.Request, logger *log.Logger) <span class="cov0" title="0">{
         errorPart := fmt.Sprintf("Error: %s", errorMsg.Error())
         hostPart := fmt.Sprintf("Attemped by Host %s (RemoteAddr: %s,\n Proto: %s,\n Pattern: %s,\n URL: %s,\n ReqURI: %s).", request.Host, request.RemoteAddr, request.Proto, request.Pattern, request.URL, request.RequestURI)
-        logger.Warning(fmt.Sprintf("[API] %s\n%s\n%s ", s, errorPart, hostPart))
+        logger.Printf("[WARN]-[API] %s\n%s\n%s ", s, errorPart, hostPart)
 }</span>
 </pre>
 		
