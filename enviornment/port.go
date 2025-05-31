@@ -1,7 +1,6 @@
 package enviornment
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 
@@ -20,7 +19,6 @@ func Port(defaultPort int, logger *logger.Logger) int {
 	if err != nil {
 		return defaultPort
 	}
-	fmt.Println(port)
 	logger.Printf("[INFO]-[Enviornment Vars] Server listen on env port %d", port)
 	return port
 }
