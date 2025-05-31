@@ -121,27 +121,37 @@
 				
 				<option value="file32">github.com/programmierigel/pwmanager/enviornment/port.go (90.0%)</option>
 				
-				<option value="file33">github.com/programmierigel/pwmanager/main.go (0.0%)</option>
+				<option value="file33">github.com/programmierigel/pwmanager/logger/New.go (84.6%)</option>
 				
-				<option value="file34">github.com/programmierigel/pwmanager/storage/inmemory/store.go (75.3%)</option>
+				<option value="file34">github.com/programmierigel/pwmanager/logger/Panic.go (0.0%)</option>
 				
-				<option value="file35">github.com/programmierigel/pwmanager/tools/debugLog.go (0.0%)</option>
+				<option value="file35">github.com/programmierigel/pwmanager/logger/Print.go (0.0%)</option>
 				
-				<option value="file36">github.com/programmierigel/pwmanager/tools/isElementInMap.go (100.0%)</option>
+				<option value="file36">github.com/programmierigel/pwmanager/logger/Printf.go (100.0%)</option>
 				
-				<option value="file37">github.com/programmierigel/pwmanager/tools/isElementInSlice.go (0.0%)</option>
+				<option value="file37">github.com/programmierigel/pwmanager/logger/Println.go (0.0%)</option>
 				
-				<option value="file38">github.com/programmierigel/pwmanager/tools/isIdInMap.go (100.0%)</option>
+				<option value="file38">github.com/programmierigel/pwmanager/main.go (0.0%)</option>
 				
-				<option value="file39">github.com/programmierigel/pwmanager/tools/removeMapFromMap.go (50.0%)</option>
+				<option value="file39">github.com/programmierigel/pwmanager/storage/inmemory/store.go (75.3%)</option>
 				
-				<option value="file40">github.com/programmierigel/pwmanager/tools/removePasswordFromMap.go (83.3%)</option>
+				<option value="file40">github.com/programmierigel/pwmanager/tools/debugLog.go (0.0%)</option>
 				
-				<option value="file41">github.com/programmierigel/pwmanager/tools/removeStringFromMap.go (83.3%)</option>
+				<option value="file41">github.com/programmierigel/pwmanager/tools/isElementInMap.go (100.0%)</option>
 				
-				<option value="file42">github.com/programmierigel/pwmanager/tools/removeTokenFromMap.go (83.3%)</option>
+				<option value="file42">github.com/programmierigel/pwmanager/tools/isElementInSlice.go (0.0%)</option>
 				
-				<option value="file43">github.com/programmierigel/pwmanager/tools/warningLog.go (0.0%)</option>
+				<option value="file43">github.com/programmierigel/pwmanager/tools/isIdInMap.go (100.0%)</option>
+				
+				<option value="file44">github.com/programmierigel/pwmanager/tools/removeMapFromMap.go (50.0%)</option>
+				
+				<option value="file45">github.com/programmierigel/pwmanager/tools/removePasswordFromMap.go (83.3%)</option>
+				
+				<option value="file46">github.com/programmierigel/pwmanager/tools/removeStringFromMap.go (83.3%)</option>
+				
+				<option value="file47">github.com/programmierigel/pwmanager/tools/removeTokenFromMap.go (83.3%)</option>
+				
+				<option value="file48">github.com/programmierigel/pwmanager/tools/warningLog.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -161,15 +171,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -210,15 +220,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -258,15 +268,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -306,15 +316,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -354,15 +364,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -402,15 +412,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -450,15 +460,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -511,15 +521,15 @@ func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span cla
 import (
         "encoding/json"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -564,15 +574,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -623,15 +633,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -671,15 +681,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -718,15 +728,15 @@ func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span cla
 import (
         "encoding/json"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -766,15 +776,15 @@ func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span cla
 import (
         "encoding/json"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -814,15 +824,15 @@ func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span cla
 import (
         "encoding/json"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -856,15 +866,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -916,15 +926,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 // TODO: Get Admin Password from env variable and check if it is correct. Than dis/enable sync and run sync to/from file. For now the code is a comment
@@ -976,15 +986,15 @@ func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span cla
 import (
         "encoding/json"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -1034,15 +1044,15 @@ func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span cla
 import (
         "encoding/json"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -1093,15 +1103,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -1152,15 +1162,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -1211,15 +1221,15 @@ import (
         "encoding/json"
         "fmt"
         "io"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 response.Header().Set("Access-Control-Allow-Origin", "*")
                 requestBytes, err := io.ReadAll(io.LimitReader(request.Body, 4096))
@@ -1269,15 +1279,15 @@ func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span cla
 import (
         "encoding/json"
         "fmt"
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(response http.ResponseWriter, request *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 status := store.IsSyncDisabled()
 
@@ -1322,8 +1332,6 @@ func Handle() httprouter.Handle <span class="cov0" title="0">{
 		<pre class="file" id="file23" style="display: none">package api
 
 import (
-        "log"
-
         "github.com/julienschmidt/httprouter"
         addnewaccount "github.com/programmierigel/pwmanager/api/addNewAccount"
         addnewpassword "github.com/programmierigel/pwmanager/api/addNewPassword"
@@ -1349,10 +1357,11 @@ import (
         "github.com/programmierigel/pwmanager/api/ping"
         synctofile "github.com/programmierigel/pwmanager/api/syncToFile"
         "github.com/programmierigel/pwmanager/api/syncfromfile"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
 )
 
-func GetRouter(store storage.Store, logger *log.Logger) *httprouter.Router <span class="cov0" title="0">{
+func GetRouter(store storage.Store, logger *logger.Logger) *httprouter.Router <span class="cov0" title="0">{
         router := httprouter.New()
         // QUERYS
         router.GET("/ping", ping.Handle())
@@ -1388,15 +1397,15 @@ func GetRouter(store storage.Store, logger *log.Logger) *httprouter.Router <span
 		<pre class="file" id="file24" style="display: none">package synctofile
 
 import (
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 err := store.SyncToFile()
 
@@ -1416,15 +1425,15 @@ func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span cla
 		<pre class="file" id="file25" style="display: none">package syncfromfile
 
 import (
-        "log"
         "net/http"
 
         "github.com/julienschmidt/httprouter"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/storage"
         "github.com/programmierigel/pwmanager/tools"
 )
 
-func Handle(store storage.Store, logger *log.Logger) httprouter.Handle <span class="cov0" title="0">{
+func Handle(store storage.Store, logger *logger.Logger) httprouter.Handle <span class="cov0" title="0">{
         return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) </span><span class="cov0" title="0">{
                 err := store.SyncFromFile()
 
@@ -1503,12 +1512,13 @@ import (
         "crypto/sha256"
         "encoding/base64"
         "io"
-        "log"
+
+        "github.com/programmierigel/pwmanager/logger"
 )
 
 // Encrypt encrypts a plaintext string using a password
 // Returns base64-encoded encrypted string
-func Encrypt(plaintext, password string, logger *log.Logger) (string, error) <span class="cov8" title="1">{
+func Encrypt(plaintext, password string, logger *logger.Logger) (string, error) <span class="cov8" title="1">{
         // Create a hash of the password to use as the AES key
         key := sha256.Sum256([]byte(password))
 
@@ -1561,14 +1571,15 @@ import (
         "crypto/rand"
         "encoding/base64"
         "fmt"
-        "log"
+
+        "github.com/programmierigel/pwmanager/logger"
 )
 
 // GenerateSalt creates a cryptographically secure random string
 // suitable for use as a salt in password hashing or other security applications.
 // The length parameter specifies the number of random bytes to generate
-// before base64 encoding (final output will be longer).
-func GenerateSalt(length int, logger *log.Logger) (string, error) <span class="cov8" title="1">{
+// before base64 encoding (final outp*logger.Loggergerlonger).
+func GenerateSalt(length int, logger *logger.Logger) (string, error) <span class="cov8" title="1">{
         // Allocate a byte slice to store the random bytes
         randomBytes := make([]byte, length)
 
@@ -1589,11 +1600,12 @@ func GenerateSalt(length int, logger *log.Logger) (string, error) <span class="c
 		<pre class="file" id="file30" style="display: none">package enviornment
 
 import (
-        "log"
         "os"
+
+        "github.com/programmierigel/pwmanager/logger"
 )
 
-func Password(defaultPassword string, logger *log.Logger) string <span class="cov8" title="1">{
+func Password(defaultPassword string, logger *logger.Logger) string <span class="cov8" title="1">{
         password := os.Getenv("PASSWORD")
 
         if password == "" </span><span class="cov8" title="1">{
@@ -1608,11 +1620,12 @@ func Password(defaultPassword string, logger *log.Logger) string <span class="co
 		<pre class="file" id="file31" style="display: none">package enviornment
 
 import (
-        "log"
         "os"
+
+        "github.com/programmierigel/pwmanager/logger"
 )
 
-func Path(defaultPath string, logger *log.Logger) string <span class="cov8" title="1">{
+func Path(defaultPath string, logger *logger.Logger) string <span class="cov8" title="1">{
         path := os.Getenv("LOCATION_PATH")
 
         if path == "" </span><span class="cov8" title="1">{
@@ -1629,12 +1642,13 @@ func Path(defaultPath string, logger *log.Logger) string <span class="cov8" titl
 
 import (
         "fmt"
-        "log"
         "os"
         "strconv"
+
+        "github.com/programmierigel/pwmanager/logger"
 )
 
-func Port(defaultPort int, logger *log.Logger) int <span class="cov8" title="1">{
+func Port(defaultPort int, logger *logger.Logger) int <span class="cov8" title="1">{
         portAsString := os.Getenv("PORT")
 
         if portAsString == "" </span><span class="cov8" title="1">{
@@ -1652,30 +1666,90 @@ func Port(defaultPort int, logger *log.Logger) int <span class="cov8" title="1">
 }
 </pre>
 		
-		<pre class="file" id="file33" style="display: none">package main
+		<pre class="file" id="file33" style="display: none">package logger
 
 import (
         "fmt"
         "log"
-        "net/http"
         "os"
         "time"
-
-        "github.com/programmierigel/pwmanager/api"
-        "github.com/programmierigel/pwmanager/enviornment"
-        "github.com/programmierigel/pwmanager/storage/inmemory"
 )
 
-func main() <span class="cov0" title="0">{
+func New(path string) *Logger <span class="cov8" title="1">{
         now := time.Now()
-        f, err := os.OpenFile(fmt.Sprintf("PWManagerServer - %d.%d.%d.logs", now.Day(), now.Month(), now.Year()),
+        dirPath := os.Getenv("LOCATION_PATH")
+
+        if dirPath == "" </span><span class="cov8" title="1">{
+                dirPath = "."
+        }</span>
+
+        <span class="cov8" title="1">if path == "" </span><span class="cov0" title="0">{
+                path = fmt.Sprintf("%s/PWManagerServer - %d.%d.%d.log", dirPath, now.Day(), now.Month(), now.Year())
+        }</span>
+
+        <span class="cov8" title="1">f, err := os.OpenFile(path,
                 os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
         if err != nil </span><span class="cov0" title="0">{
                 log.Println(err)
         }</span>
-        <span class="cov0" title="0">defer f.Close()
-        logger := log.New(f, "", log.LstdFlags)
+        <span class="cov8" title="1">defer f.Close()
+        loggerFile := log.New(f, "", log.LstdFlags)
+        loggerConsole := log.New(os.Stdout, "", log.LstdFlags)
 
+        return &amp;Logger{
+                loggerFile:    loggerFile,
+                loggerConsole: loggerConsole,
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file34" style="display: none">package logger
+
+func (l *Logger) Panic(v ...any) <span class="cov0" title="0">{
+        l.loggerConsole.Println(v...)
+        l.loggerFile.Panic(v...)
+}</span>
+</pre>
+		
+		<pre class="file" id="file35" style="display: none">package logger
+
+func (l *Logger) Print(v ...any) <span class="cov0" title="0">{
+        l.loggerFile.Print(v...)
+        l.loggerConsole.Print(v...)
+}</span>
+</pre>
+		
+		<pre class="file" id="file36" style="display: none">package logger
+
+func (l *Logger) Printf(format string, v ...any) <span class="cov8" title="1">{
+        l.loggerFile.Printf(format, v...)
+        l.loggerFile.Printf(format, v...)
+}</span>
+</pre>
+		
+		<pre class="file" id="file37" style="display: none">package logger
+
+func (l *Logger) Println(v ...any) <span class="cov0" title="0">{
+        l.loggerConsole.Println(v...)
+        l.loggerFile.Println(v...)
+}</span>
+</pre>
+		
+		<pre class="file" id="file38" style="display: none">package main
+
+import (
+        "fmt"
+        "net/http"
+
+        "github.com/programmierigel/pwmanager/api"
+        "github.com/programmierigel/pwmanager/enviornment"
+        "github.com/programmierigel/pwmanager/logger"
+        "github.com/programmierigel/pwmanager/storage/inmemory"
+)
+
+func main() <span class="cov0" title="0">{
+
+        logger := logger.New("")
         port := enviornment.Port(3000, logger)
 
         path := enviornment.Path(".", logger)
@@ -1689,26 +1763,26 @@ func main() <span class="cov0" title="0">{
                 Handler: router,
         }
 
-        err = server.ListenAndServe()
+        err := server.ListenAndServe()
         if err != nil </span><span class="cov0" title="0">{
                 logger.Panic(err)
         }</span>
 }
 </pre>
 		
-		<pre class="file" id="file34" style="display: none">package inmemory
+		<pre class="file" id="file39" style="display: none">package inmemory
 
 import (
         "encoding/json"
         "fmt"
         "io"
         "io/fs"
-        "log"
         "os"
         "time"
 
         "github.com/google/uuid"
         "github.com/programmierigel/pwmanager/cryptography"
+        "github.com/programmierigel/pwmanager/logger"
         "github.com/programmierigel/pwmanager/manager"
         "github.com/programmierigel/pwmanager/tools"
 )
@@ -1721,10 +1795,10 @@ type Store struct {
         password             string
         token                map[string]manager.Token
         remoteRequestAddress map[string]map[string]manager.RemoteRequestAddress
-        logger               *log.Logger
+        logger               *logger.Logger
 }
 
-func New(path string, password string, logger *log.Logger) *Store <span class="cov8" title="1">{
+func New(path string, password string, logger *logger.Logger) *Store <span class="cov8" title="1">{
 
         store := &amp;Store{
                 file:                 fmt.Sprintf("%s/secrets.json", path),
@@ -2222,21 +2296,22 @@ func (s *Store) GetAllActiveTokens(token string) (uint, error) <span class="cov0
 }
 </pre>
 		
-		<pre class="file" id="file35" style="display: none">package tools
+		<pre class="file" id="file40" style="display: none">package tools
 
 import (
         "fmt"
-        "log"
         "net/http"
+
+        "github.com/programmierigel/pwmanager/logger"
 )
 
-func DebugLog(s string, request *http.Request, logger *log.Logger) <span class="cov0" title="0">{
+func DebugLog(s string, request *http.Request, logger *logger.Logger) <span class="cov0" title="0">{
         hostPart := fmt.Sprintf("Run by Host %s (RemoteAddr: %s,\n Proto: %s,\n Pattern: %s,\n URL: %s,\n ReqURI: %s).", request.Host, request.RemoteAddr, request.Proto, request.Pattern, request.URL, request.RequestURI)
         logger.Printf("[DEBUG]-[API] %s\n%s", s, hostPart)
 }</span>
 </pre>
 		
-		<pre class="file" id="file36" style="display: none">package tools
+		<pre class="file" id="file41" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2252,7 +2327,7 @@ func IsElementInMap(element string, mapInput map[string]manager.Secret) bool <sp
 }
 </pre>
 		
-		<pre class="file" id="file37" style="display: none">package tools
+		<pre class="file" id="file42" style="display: none">package tools
 
 import "fmt"
 
@@ -2268,7 +2343,7 @@ func IsElementInSlice(element string, slice []string) error <span class="cov0" t
 }
 </pre>
 		
-		<pre class="file" id="file38" style="display: none">package tools
+		<pre class="file" id="file43" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2282,7 +2357,7 @@ func IsIDInMap(id string, Map map[string]manager.Token) bool <span class="cov8" 
 }
 </pre>
 		
-		<pre class="file" id="file39" style="display: none">package tools
+		<pre class="file" id="file44" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2300,7 +2375,7 @@ func RemoveMapFromMap(mapToFind map[string]map[string]manager.Secret, element st
 }
 </pre>
 		
-		<pre class="file" id="file40" style="display: none">package tools
+		<pre class="file" id="file45" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2318,7 +2393,7 @@ func RemovePasswordFromMap(mapToFind map[string]manager.Password, element string
 }
 </pre>
 		
-		<pre class="file" id="file41" style="display: none">package tools
+		<pre class="file" id="file46" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2336,7 +2411,7 @@ func RemoveStringFromMap(mapToFind map[string]manager.Secret, element string) ma
 }
 </pre>
 		
-		<pre class="file" id="file42" style="display: none">package tools
+		<pre class="file" id="file47" style="display: none">package tools
 
 import "github.com/programmierigel/pwmanager/manager"
 
@@ -2354,15 +2429,16 @@ func RemoveTokenFromMap(token string, Map map[string]manager.Token) map[string]m
 }
 </pre>
 		
-		<pre class="file" id="file43" style="display: none">package tools
+		<pre class="file" id="file48" style="display: none">package tools
 
 import (
         "fmt"
-        "log"
         "net/http"
+
+        "github.com/programmierigel/pwmanager/logger"
 )
 
-func WarningLog(s string, errorMsg error, request *http.Request, logger *log.Logger) <span class="cov0" title="0">{
+func WarningLog(s string, errorMsg error, request *http.Request, logger *logger.Logger) <span class="cov0" title="0">{
         errorPart := fmt.Sprintf("Error: %s", errorMsg.Error())
         hostPart := fmt.Sprintf("Attemped by Host %s (RemoteAddr: %s,\n Proto: %s,\n Pattern: %s,\n URL: %s,\n ReqURI: %s).", request.Host, request.RemoteAddr, request.Proto, request.Pattern, request.URL, request.RequestURI)
         logger.Printf("[WARN]-[API] %s\n%s\n%s ", s, errorPart, hostPart)
